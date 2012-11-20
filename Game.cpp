@@ -6,11 +6,11 @@ using namespace std;
 
 Game::Game()
 {
-	grid = nullptr;
-	players[0] = nullptr;
-	players[1] = nullptr;
+	grid = NULL;
+	players[0] = NULL;
+	players[1] = NULL;
 
-	input = nullptr;
+	input = NULL;
 
 	curPlayer = 0;
 	placePiece = 0;
@@ -227,7 +227,7 @@ void Game::setupGame()
 
 }
 
-sf::Text Game::getText(double tx, double ty, string str, int size, sf::Color & col)
+sf::Text Game::getText(double tx, double ty, string str, int size, sf::Color col)
 {
 	sf::Text text;
 

@@ -31,7 +31,7 @@ public:
 	void setPlayer(int p) { curPlayer = p; if (grid) grid->setPlayer(p); }
 
 	//utility function to draw text
-	sf::Text getText(double tx, double ty, string str, int size, sf::Color & col = sf::Color(0, 0, 0, 255));
+	sf::Text getText(double tx, double ty, string str, int size, sf::Color col = sf::Color(0, 0, 0, 255));
 	int mouseOver(int x1, int y1, int x2, int y2);
 	sf::Vector2f getMousePos();
 	int button(int x, int y, sf::Texture texture);

@@ -12,9 +12,9 @@ Input::~Input()
 
 void Input::getInput()
 {
-	updateState(0, sf::Mouse::isButtonPressed(sf::Mouse::Button::Left));
-	updateState(1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Right));
-	updateState(2, sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle));
+	updateState(0, sf::Mouse::isButtonPressed(sf::Mouse::Left));
+	updateState(1, sf::Mouse::isButtonPressed(sf::Mouse::Right));
+	updateState(2, sf::Mouse::isButtonPressed(sf::Mouse::Middle));
 }
 
 void Input::updateState(int i, int state)

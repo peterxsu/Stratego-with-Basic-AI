@@ -163,7 +163,7 @@ Actor * Player::getNext(int type)
 			}
 		}
 	}
-	return nullptr;
+	return NULL;
 }
 
 string Player::typeToString(int ty)
