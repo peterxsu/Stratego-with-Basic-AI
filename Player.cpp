@@ -196,7 +196,7 @@ int Player::getTotalLeft()
 	return n;
 }
 
-MoveList* getPossibleMoves()
+MoveList* Player::getPossibleMoves()
 {
 	MoveList* firstMove = NULL;
 	MoveList* currentMove = NULL;
