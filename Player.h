@@ -8,6 +8,12 @@ class Actor;
 
 using namespace std;
 
+struct MoveList
+{
+	int x1, y1, x2, y2;
+	MoveList* next;
+};
+
 class Player
 {
 public:
@@ -30,6 +36,8 @@ public:
 	Actor * getActor(int i) { return actors[i]; }
 
 	static string typeToString(int ty);
+	
+	MoveList* getPossibleMoves();
 
 protected:
 

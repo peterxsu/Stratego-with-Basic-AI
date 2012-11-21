@@ -195,3 +195,152 @@ int Player::getTotalLeft()
 	}
 	return n;
 }
+
+MoveList* getPossibleMoves()
+{
+	MoveList* firstMove = NULL;
+	MoveList* currentMove = NULL;
+	MoveList* newMove = NULL;
+	Actor* currentActor = NULL;
+	for(int x = 0; x < 10; x++)
+		for(int y = 0; y < 10; y++)
+		{
+			currentActor = grid->getActor(x, y);
+			if(currentActor && currentActor->getTeam() == team && currentActor->getType() > 0 && currentActor->getType() < 11)
+			{
+				if(grid->isValidMove(x, y, x-1, y, this))
+				{
+					newMove = new MoveList;
+					newMove->x1 = x;
+					newMove->y1 = y;
+					newMove->x2 = x-1;
+					newMove->y2 = y;
+					newMove->next = NULL;
+					if(!firstMove)
+						firstMove = newMove;
+					else
+						currentMove->next = newMove;
+					currentMove = newMove;
+				}
+				if(currentActor->getType() == 9)
+				{
+					int distance = 2;
+					while(grid->isValidMove(x, y, x-distance, y, this))
+					{
+						newMove = new MoveList;
+						newMove->x1 = x;
+						newMove->y1 = y;
+						newMove->x2 = x-distance;
+						newMove->y2 = y;
+						newMove->next = NULL;
+						if(!firstMove)
+							firstMove = newMove;
+						else
+							currentMove->next = newMove;
+						currentMove = newMove;
+						distance++;
+					}
+				}
+				if(grid->isValidMove(x, y, x, y-1, this))
+				{
+					newMove = new MoveList;
+					newMove->x1 = x;
+					newMove->y1 = y;
+					newMove->x2 = x;
+					newMove->y2 = y-1;
+					newMove->next = NULL;
+					if(!firstMove)
+						firstMove = newMove;
+					else
+						currentMove->next = newMove;
+					currentMove = newMove;
+				}
+				if(currentActor->getType() == 9)
+				{
+					int distance = 2;
+					while(grid->isValidMove(x, y, x, y-distance, this))
+					{
+						newMove = new MoveList;
+						newMove->x1 = x;
+						newMove->y1 = y;
+						newMove->x2 = x;
+						newMove->y2 = y-distance;
+						newMove->next = NULL;
+						if(!firstMove)
+							firstMove = newMove;
+						else
+							currentMove->next = newMove;
+						currentMove = newMove;
+						distance++;
+					}
+				}
+				if(grid->isValidMove(x, y, x+1, y, this))
+				{
+					newMove = new MoveList;
+					newMove->x1 = x;
+					newMove->y1 = y;
+					newMove->x2 = x+1;
+					newMove->y2 = y;
+					newMove->next = NULL;
+					if(!firstMove)
+						firstMove = newMove;
+					else
+						currentMove->next = newMove;
+					currentMove = newMove;
+				}
+				if(currentActor->getType() == 9)
+				{
+					int distance = 2;
+					while(grid->isValidMove(x, y, x+distance, y, this))
+					{
+						newMove = new MoveList;
+						newMove->x1 = x;
+						newMove->y1 = y;
+						newMove->x2 = x+distance;
+						newMove->y2 = y;
+						newMove->next = NULL;
+						if(!firstMove)
+							firstMove = newMove;
+						else
+							currentMove->next = newMove;
+						currentMove = newMove;
+						distance++;
+					}
+				}
+				if(grid->isValidMove(x, y, x, y+1, this))
+				{
+					newMove = new MoveList;
+					newMove->x1 = x;
+					newMove->y1 = y;
+					newMove->x2 = x;
+					newMove->y2 = y+1;
+					newMove->next = NULL;
+					if(!firstMove)
+						firstMove = newMove;
+					else
+						currentMove->next = newMove;
+					currentMove = newMove;
+				}
+				if(currentActor->getType() == 9)
+				{
+					int distance = 2;
+					while(grid->isValidMove(x, y, x, y+distance, this))
+					{
+						newMove = new MoveList;
+						newMove->x1 = x;
+						newMove->y1 = y;
+						newMove->x2 = x;
+						newMove->y2 = y+distance;
+						newMove->next = NULL;
+						if(!firstMove)
+							firstMove = newMove;
+						else
+							currentMove->next = newMove;
+						currentMove = newMove;
+						distance++;
+					}
+				}
+			}
+		}
+	return firstMove;
+}
