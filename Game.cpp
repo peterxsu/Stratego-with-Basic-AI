@@ -24,7 +24,7 @@ bool Game::init()
 {	 
 	state = MENU;
 
-	win.create(sf::VideoMode(800, 600), "Stratego");
+	win.create(sf::VideoMode(800, 600), "Stratego", sf::Style::Fullscreen);
 	view = sf::View(sf::FloatRect(0, 0, 800, 600));
 	transform = sf::Transform::Identity;
 
@@ -68,6 +68,13 @@ bool Game::run()
 		{
 			return false;
 		}
+		if (e.type == sf::Event::KeyPressed)
+		{
+			if (e.key.code == sf::Keyboard::Space)
+			{
+				return false;
+			}
+		}
 		if (e.type == sf::Event::Resized)
 		{
 			float width = win.getSize().x;
@@ -77,7 +84,6 @@ bool Game::run()
 			win.setView(view);
 			transform = sf::Transform::Identity;
 			float scale = min(view.getSize().x / 800.0f, view.getSize().y / 600.0f);
-
 			transform.scale(scale, scale);
 		}
 	}
