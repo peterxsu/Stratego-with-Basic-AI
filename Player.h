@@ -28,6 +28,7 @@ public:
 	void choosePlacement(int &, int &);
 	Actor* findPiece(int);
 	int getTeam();
+	int getHuman() { return isHuman; }
 
 	int getLeft(int type);
 	int getTotalLeft();
@@ -44,6 +45,7 @@ protected:
 	int team;
 	Grid * grid;
 	Actor ** actors;
+	int isHuman;
 
 private:
 

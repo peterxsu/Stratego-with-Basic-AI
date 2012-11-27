@@ -14,6 +14,7 @@ Game::Game()
 
 	curPlayer = 0;
 	placePiece = 0;
+	selectedPiece = 0;
 }
 
 Game::~Game()
@@ -24,7 +25,7 @@ bool Game::init()
 {	 
 	state = MENU;
 
-	win.create(sf::VideoMode(800, 600), "Stratego", sf::Style::Fullscreen);
+	win.create(sf::VideoMode(800, 600), "Stratego"); //, sf::Style::Fullscreen);
 	view = sf::View(sf::FloatRect(0, 0, 800, 600));
 	transform = sf::Transform::Identity;
 
@@ -53,6 +54,8 @@ void Game::reset()
 	players[1] = new Player(1, grid);
 
 	curPlayer = 0;
+	selectedPiece = 0;
+	placePiece = 0;
 
 	setPlayer(0);
 }
@@ -70,7 +73,7 @@ bool Game::run()
 		}
 		if (e.type == sf::Event::KeyPressed)
 		{
-			if (e.key.code == sf::Keyboard::Space)
+			if (e.key.code == sf::Keyboard::Escape)
 			{
 				return false;
 			}
@@ -138,19 +141,17 @@ void Game::displayMenu()
 
 void Game::playGame()
 {
-	while (!grid->getOver())
+	if (grid->getOver())
 	{
-		setPlayer(0);
-		win.clear();
-		win.draw(*grid);
-		win.display();
-		players[0]->makeMove();
-		setPlayer(1);
-		win.clear();
-		win.draw(*grid);
-		win.display();
-		players[1]->makeMove();
+		//game is over, do something
 	}
+	else
+	{
+		
+	}
+	win.clear();
+	win.draw(*grid);
+	win.display();
 }
 
 void Game::setupGame()

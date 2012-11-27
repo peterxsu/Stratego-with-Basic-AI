@@ -74,7 +74,7 @@ public:
 
 	static void loadResources();
 	
-	static sf::Texture actorChars[11];
+	static sf::Texture actorChars[12];
 	static sf::Texture actorTiles[2];
     
 private:

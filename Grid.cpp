@@ -15,7 +15,7 @@
 
 using namespace std;
 
-sf::Texture Grid::actorChars[11];
+sf::Texture Grid::actorChars[12];
 sf::Texture Grid::actorTiles[2];
 
 Grid::Grid()
@@ -327,12 +327,13 @@ void Grid::snapToGrid(double worldX, double worldY, int & cellX, int & cellY)
 void Grid::loadResources()
 {
 	actorTiles[0].loadFromFile("redtile.png");
-	actorTiles[1].loadFromFile("bluetile.png");
-	
+	actorTiles[1].loadFromFile("bluetile.png");	
+
 	for (int i = 0; i <= 11; i++)
 	{
 		stringstream stream;
 		stream << "tile" << i << ".png";
 		actorChars[i].loadFromFile(stream.str());
 	}
+
 }

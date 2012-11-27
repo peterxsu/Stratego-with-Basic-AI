@@ -48,6 +48,8 @@ private:
 	int curPlayer;
 	//which type of piece is being placed?
 	int placePiece;
+	//which piece is selected to move?
+	int selectedPiece;
 
 	// Graphics resources
 	sf::RenderWindow win;
