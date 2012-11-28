@@ -125,7 +125,9 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
 
 bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
 {
-    
+    if(x1>=10 || y1>=10 || x2>=10 || y2>=10 || x1<0 || y1<0 || x2<0 || y2<0)
+	return false;
+
     if(x2!=x1 && y2!=y1)//checks to see if move is diagonal
     {
         return false;
@@ -149,8 +151,6 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
             return false;
         }
     }
-    if(x1<10 && y1<10 && x2<10 && y2<10 && x1>=0 && y1>=0 && x2>=0 && y2>=0)
-    {
        if(x1==x2 && y1==y2)
        {
            return false;
@@ -227,14 +227,14 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
                     return false;
             }
         }
-    }
-    else
-        return false;
 }
 
 Actor * Grid::getActor(int x, int y)
 {
-	return grid[x][y];
+	if (x < 10 && x >= 0 && y < 10 && y >= 0)
+		return grid[x][y];
+	else
+		return NULL;
 }
 
 void Grid::print()

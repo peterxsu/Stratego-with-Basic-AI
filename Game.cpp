@@ -14,7 +14,9 @@ Game::Game()
 
 	curPlayer = 0;
 	placePiece = 0;
-	selectedPiece = 0;
+	selectedPiece = NULL;
+	selectedX = 0;
+	selectedY = 0;
 }
 
 Game::~Game()
@@ -25,7 +27,7 @@ bool Game::init()
 {	 
 	state = MENU;
 
-	win.create(sf::VideoMode(800, 600), "Stratego"); //, sf::Style::Fullscreen);
+	win.create(sf::VideoMode(1366, 768), "Stratego", sf::Style::Fullscreen);
 	view = sf::View(sf::FloatRect(0, 0, 800, 600));
 	transform = sf::Transform::Identity;
 
@@ -54,8 +56,10 @@ void Game::reset()
 	players[1] = new Player(1, grid);
 
 	curPlayer = 0;
-	selectedPiece = 0;
+	selectedPiece = NULL;
 	placePiece = 0;
+	selectedX = 0;
+	selectedY = 0;
 
 	setPlayer(0);
 }
@@ -141,30 +145,84 @@ void Game::displayMenu()
 
 void Game::playGame()
 {
+	drawBg();
+	win.draw(*grid);
+
+
 	if (grid->getOver())
 	{
 		//game is over, do something
 	}
 	else
 	{
-		
+		sf::Vector2i tpos;
+		tpos.x = sf::Mouse::getPosition().x / 60.0f;
+		tpos.y = sf::Mouse::getPosition().y / 60.0f;
+		if (input->getMouseState(0) == Input::PRESSED)
+		{
+			if (grid->getActor(tpos.x, tpos.y))
+			{
+				if (grid->getActor(tpos.x, tpos.y)->getTeam() == curPlayer)
+				{
+					selectedPiece = grid->getActor(tpos.x, tpos.y);
+					selectedX = tpos.x;
+					selectedY = tpos.y;
+				}
+			}
+		}
+
+		if (selectedPiece)
+		{
+			highlightTile(selectedX, selectedY, sf::Color(0, 0, 255, 80));
+			if (selectedPiece->getType() == 9)
+			{
+				for (int x = 0; x < 10; x++)
+				{
+					if (grid->isValidMove(selectedX, selectedY, x, selectedY, players[curPlayer]))
+					{
+						highlightTile(x, selectedY, sf::Color(255, 255, 0, 100));
+					}
+				}
+				for (int y = 0; y < 10; y++)
+				{
+					if (grid->isValidMove(selectedX, selectedY, selectedX, y, players[curPlayer]))
+					{
+						highlightTile(selectedX, y, sf::Color(255, 255, 0, 100));
+					}
+				}
+			}
+			else
+			{
+				if (grid->isValidMove(selectedX, selectedY, selectedX - 1, selectedY, players[curPlayer]))
+					highlightTile(selectedX - 1, selectedY, sf::Color(255, 255, 0, 100));
+				if (grid->isValidMove(selectedX, selectedY, selectedX + 1, selectedY, players[curPlayer]))
+					highlightTile(selectedX + 1, selectedY, sf::Color(255, 255, 0, 100));
+				if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY - 1, players[curPlayer]))
+					highlightTile(selectedX, selectedY - 1, sf::Color(255, 255, 0, 100));
+				if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY + 1, players[curPlayer]))
+					highlightTile(selectedX, selectedY + 1, sf::Color(255, 255, 0, 100));
+			}
+			if (input->getMouseState(0) == Input::PRESSED)
+			{
+				if (grid->isValidMove(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]))
+				{
+					grid->move(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]);
+					selectedPiece = NULL;
+					setPlayer(1 - curPlayer);
+				}
+			}
+		}
 	}
-	win.clear();
-	win.draw(*grid);
-	win.display();
 }
 
 void Game::setupGame()
 {
-	sf::Sprite bgspr(bg);
-	bgspr.setPosition(0, 0);
-	win.draw(bgspr, transform);
+	drawBg();
+
 	win.draw(*grid, transform);
 
 	stringstream stream;
 	stream << "Player " << (curPlayer + 1) << ", place";
-
-	
 
 	win.draw(getText(615, 5, stream.str(), 35, sf::Color(255, 255, 255, 255)), transform);
 	win.draw(getText(615, 25, "your pieces.", 35, sf::Color(255, 255, 255, 255)), transform);
@@ -229,7 +287,14 @@ void Game::setupGame()
 		if (curPlayer == 0)
 			setPlayer(1);
 		else
+		{
+			setPlayer(0);
 			state = PLAY;
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+	{
+		players[curPlayer]->autoPlacePieces();
 	}
 
 }
@@ -296,4 +361,11 @@ void Game::highlightTile(int x, int y, sf::Color col)
 	rect.setPosition(x * 60, y * 60);
 	rect.setFillColor(col);
 	win.draw(rect, transform);
+}
+
+void Game::drawBg()
+{
+	sf::Sprite spr(bg);
+	spr.setPosition(0, 0);
+	win.draw(spr, transform);
 }

@@ -36,6 +36,7 @@ public:
 	sf::Vector2f getMousePos();
 	int button(int x, int y, sf::Texture texture);
 	void highlightTile(int x, int y, sf::Color col);
+	void drawBg();
 
 private:
 
@@ -49,7 +50,8 @@ private:
 	//which type of piece is being placed?
 	int placePiece;
 	//which piece is selected to move?
-	int selectedPiece;
+	Actor * selectedPiece;
+	int selectedX, selectedY;
 
 	// Graphics resources
 	sf::RenderWindow win;

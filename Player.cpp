@@ -345,3 +345,18 @@ MoveList* Player::getPossibleMoves()
 		}
 	return firstMove;
 }
+
+void Player::autoPlacePieces()
+{
+	int i = 0;
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = team * 6; y < team * 6 + 4; y++)
+		{
+			if (grid->getActor(x, y))
+				grid->remove(x, y);
+			grid->add(actors[i], x, y);
+			i++;
+		}
+	}
+}
