@@ -93,9 +93,13 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         if(grid[x2][y2]->getType()==11)//checks to see if it is moving into flag. Will need win function later
         {
             //WINNER!!!
-			isOver = 1;
-			winner = p->getTeam();
-            return 1;
+		isOver = 1;
+		winner = p->getTeam();
+		remove(x2, y2);
+		grid[x2][y2] = grid[x1][y1];
+		grid[x1][y1] = NULL;
+	
+            	return 1;
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
         {
@@ -175,7 +179,12 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
                         		while(temp<=y2) //checks that everything in between is null
                         		{
                             			if(grid[x1][temp])
-                                			return false;
+						{
+							if (temp == y2)
+								return true;
+							else
+                                				return false;
+						}
                             			temp++;
                         		}
                         		return true;
@@ -185,8 +194,13 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
 					temp--;
 		                	while(temp>=y2) //checks that everything in between is null
 		                	{
-				            	if(grid[x1][temp])
-				                	return false;
+                            			if(grid[x1][temp])
+						{
+							if (temp == y2)
+								return true;
+							else
+                                				return false;
+						}
 				            	temp--;
 		                	}
 		                	return true;
@@ -204,8 +218,13 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
 					temp++;
 		                	while(temp<=x2)//checks that everything in between is null
 		                	{
-		                    		if(grid[temp][y1])
-		                        		return false;
+                            			if(grid[temp][y1])
+						{
+							if (temp == x2)
+								return true;
+							else
+                                				return false;
+						}
 		                   		 temp++;
 		                	}
 		                	return true;
@@ -215,8 +234,13 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
 					temp--;
 		                	while(temp>=x2)//checks that everything in between is null
 		                	{
-		                    		if(grid[temp][y1])
-		                       			return false;
+                            			if(grid[temp][y1])
+						{
+							if (temp == x2)
+								return true;
+							else
+                                				return false;
+						}
 		                    		temp--;
 		                	}
 		                	return true;
