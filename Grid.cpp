@@ -98,7 +98,7 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
 		remove(x2, y2);
 		grid[x2][y2] = grid[x1][y1];
 		grid[x1][y1] = NULL;
-	
+		setPlayer(2);
             	return 1;
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
@@ -317,7 +317,7 @@ void Grid::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
 					target.draw(tileSprite, states);
 				
-					if (team == curPlayer)
+					if (team == curPlayer || curPlayer == 2)
 					{
 						charSprite.setTexture(actorChars[type]);
 						charSprite.setPosition(i * 60, j * 60);

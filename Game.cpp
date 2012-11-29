@@ -17,6 +17,7 @@ Game::Game()
 	selectedPiece = NULL;
 	selectedX = 0;
 	selectedY = 0;
+	infoHeight = 0;
 }
 
 Game::~Game()
@@ -27,15 +28,16 @@ bool Game::init()
 {	 
 	state = MENU;
 
-	win.create(sf::VideoMode(1366, 768), "Stratego", sf::Style::Fullscreen);
+	win.create(sf::VideoMode(800, 600), "Stratego");//, sf::Style::Fullscreen);
 	view = sf::View(sf::FloatRect(0, 0, 800, 600));
 	transform = sf::Transform::Identity;
 
-	input = new Input;
 
-	if (!font.loadFromFile("dum1.ttf")) return false;
+	if (!font.loadFromFile("Sansation_Regular.ttf")) return false;
 	if (!bg.loadFromFile("bg.png")) return false;
 	if (!title.loadFromFile("title.png")) return false;
+
+	input = new Input;
 
 	playImg.loadFromFile("play.png");
 	optionsImg.loadFromFile("options.png");
@@ -60,8 +62,10 @@ void Game::reset()
 	placePiece = 0;
 	selectedX = 0;
 	selectedY = 0;
+	infoHeight = 240;
 
 	setPlayer(0);
+	setInfo("Player 1, place your\npieces.\nPress space when\nyou're done.");
 }
 
 bool Game::run()
@@ -104,6 +108,7 @@ bool Game::run()
 	switch (state)
 	{
 	case MENU:
+		win.clear(sf::Color(120, 150, 230, 255));
 		displayMenu();
 		break;
 
@@ -146,7 +151,8 @@ void Game::displayMenu()
 void Game::playGame()
 {
 	drawBg();
-	win.draw(*grid);
+	win.draw(*grid, transform);
+	drawInfo();
 
 
 	if (grid->getOver())
@@ -156,8 +162,8 @@ void Game::playGame()
 	else
 	{
 		sf::Vector2i tpos;
-		tpos.x = sf::Mouse::getPosition().x / 60.0f;
-		tpos.y = sf::Mouse::getPosition().y / 60.0f;
+		tpos.x = getMousePos().x / 60.0f;
+		tpos.y = getMousePos().y / 60.0f;
 		if (input->getMouseState(0) == Input::PRESSED)
 		{
 			if (grid->getActor(tpos.x, tpos.y))
@@ -208,7 +214,24 @@ void Game::playGame()
 				{
 					grid->move(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]);
 					selectedPiece = NULL;
-					setPlayer(1 - curPlayer);
+					//if the game is over then we make both player's pieces visible
+					//otherwise change to other player
+					if (!grid->getOver())
+					{
+						if (curPlayer == 0)
+							setInfo("Player 2, click on\n a piece to move it.");
+						else
+							setInfo("Player 1, click on\n a piece to move it.");
+						setPlayer(1 - curPlayer);
+					}
+					else
+					{
+						if (grid->getWinner() == 0)
+							setInfo("Player 1, you win!");
+						else
+							setInfo("Player 2, you win!");
+						setPlayer(2);
+					}
 				}
 			}
 		}
@@ -218,14 +241,8 @@ void Game::playGame()
 void Game::setupGame()
 {
 	drawBg();
-
 	win.draw(*grid, transform);
-
-	stringstream stream;
-	stream << "Player " << (curPlayer + 1) << ", place";
-
-	win.draw(getText(615, 5, stream.str(), 35, sf::Color(255, 255, 255, 255)), transform);
-	win.draw(getText(615, 25, "your pieces.", 35, sf::Color(255, 255, 255, 255)), transform);
+	drawInfo();
 
 	sf::Sprite tileSprite;
 	sf::Sprite tileBgSprite;
@@ -234,8 +251,8 @@ void Game::setupGame()
 	for (int i = 0; i <= 11; i++)
 	{
 		tileSprite.setTexture(Grid::actorChars[i]);
-		tileSprite.setPosition(610 + 70 * (i >= 6), 150 + i % 6 * 60);
-		tileBgSprite.setPosition(610 + 70 * (i >= 6), 150 + i % 6 * 60);
+		tileSprite.setPosition(610 + 54 * (i >= 6), 264 + i % 6 * 54);
+		tileBgSprite.setPosition(610 + 54 * (i >= 6), 264 + i % 6 * 54);
 		sf::FloatRect rect(tileSprite.getGlobalBounds());
 		if (mouseOver(rect.left, rect.top, rect.left + rect.width, rect.top + rect.height) || placePiece == i)
 		{
@@ -285,11 +302,15 @@ void Game::setupGame()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && players[curPlayer]->getTotalLeft() == 0)
 	{
 		if (curPlayer == 0)
+		{
 			setPlayer(1);
+			setInfo("Player 2, place your\npieces.\nPress space when\nyou're done.");
+		}
 		else
 		{
 			setPlayer(0);
 			state = PLAY;
+			setInfo("Player 1, click a\npiece to move it.");
 		}
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
@@ -369,3 +390,52 @@ void Game::drawBg()
 	spr.setPosition(0, 0);
 	win.draw(spr, transform);
 }
+
+void Game::setInfo(string str)
+{
+	infoImg.create(170, infoHeight);
+	infoImg.clear(sf::Color(255, 255, 255, 255));
+
+	sf::Text text;
+	text.setFont(font);
+	text.setString(str);
+	text.setPosition(10, 10);
+	text.setColor(sf::Color(0, 0, 0, 255));
+	text.setCharacterSize(14);
+	
+	infoImg.draw(text);
+
+	sf::RectangleShape rect(sf::Vector2f(168, infoHeight - 2));
+	rect.setOutlineThickness(2);
+	rect.setOutlineColor(sf::Color(0, 0, 0, 255));
+	rect.setFillColor(sf::Color(0, 0, 0, 0));
+	rect.setPosition(1, 1);
+
+	infoImg.draw(rect);
+
+	infoImg.display();
+}
+
+void Game::setInfoHeight(int h)
+{
+	infoHeight = h;
+}
+
+void Game::drawInfo()
+{
+	sf::Sprite infoSpr(infoImg.getTexture());
+	infoSpr.setPosition(615, 15);
+	win.draw(infoSpr, transform);
+}
+
+
+
+
+
+
+
+
+
+
+
+

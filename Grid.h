@@ -59,6 +59,9 @@ public:
 	int getOver() { return isOver; }
 	int getWinner() { return winner; }
 
+	//sets the current player to assist drawing.
+	//a current player of -1 makes no one's pieces visible, and a current player of 2 makes
+	//both player's pieces visible
 	void setPlayer(int p) { curPlayer = p; }
 
 	virtual void draw(sf::RenderTarget &, sf::RenderStates) const;

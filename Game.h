@@ -37,6 +37,9 @@ public:
 	int button(int x, int y, sf::Texture texture);
 	void highlightTile(int x, int y, sf::Color col);
 	void drawBg();
+	void setInfo(string str);
+	void setInfoHeight(int h);
+	void drawInfo();
 
 private:
 
@@ -62,6 +65,8 @@ private:
 	sf::Texture title;
 	sf::Texture playImg;
 	sf::Texture optionsImg;
+	sf::RenderTexture infoImg;
+	int infoHeight;
 
 	//-----------------------------------------------------
 
