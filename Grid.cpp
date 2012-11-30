@@ -39,7 +39,9 @@ Grid::Grid()
 	winner = 0;
 	isOver = 0;
 	revealed = 1;
-
+	attack = 0;
+	off = 0;
+	def = 0;
 	curPlayer = 0;
 }
 Grid::~Grid()
@@ -82,6 +84,8 @@ int Grid::remove(int x, int y)
 
 int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
 {
+	attack = 0;
+
     if(isValidMove(x1,y1,x2,y2,p))
     {
         //write shit here
@@ -104,6 +108,10 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
         {
+		attack = 1;
+		off = grid[x1][y1]->getType();
+		def = grid[x2][y2]->getType();
+
             grid[x2][y2]->setPlaced(0);
             grid[x2][y2]=grid[x1][y1];
             grid[x1][y1]=NULL;
@@ -111,6 +119,9 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         }
         if(grid[x1][y1]->getType() == grid[x2][y2]->getType())
         {
+		attack = 1;
+		off = grid[x1][y1]->getType();
+		def = grid[x2][y2]->getType();
             grid[x1][y1]->setPlaced(0);
             grid[x2][y2]->setPlaced(0);
             grid[x1][y1]=NULL;
@@ -119,6 +130,9 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         }
         else//weaker piece is moving
         {
+		attack = 1;
+		off = grid[x1][y1]->getType();
+		def = grid[x2][y2]->getType();
             grid[x1][y1]->setPlaced(0);
             grid[x1][y1]=NULL;
             return 1;
@@ -368,3 +382,13 @@ void Grid::loadResources()
 	}
 
 }
+
+
+
+
+
+
+
+
+
+

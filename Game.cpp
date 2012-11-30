@@ -163,6 +163,8 @@ void Game::playGame()
 	if (grid->getOver())
 	{
 		//game is over, do something
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			state = MENU;
 	}
 	else
 	{
@@ -248,9 +250,9 @@ void Game::playGame()
 						else
 						{
 							if (grid->getWinner() == 0)
-								setInfo("Player 1, you win!");
+								setInfo("Player 1, you win!\nPress space to return\nto the main menu.");
 							else
-								setInfo("Player 2, you win!");
+								setInfo("Player 2, you win!\nPress space to reutnr\nto the main menu.");
 							setPlayer(2);
 						}
 					}
@@ -454,6 +456,17 @@ void Game::switchPlayers()
 {
 	setPlayer(1 - curPlayer);
 	stringstream stream;
+	if (grid->getAttack())
+	{
+		stream << Player::typeToString(grid->getOffense()) << " attacked\n" << Player::typeToString(grid->getDefense()) << "!\n";
+		if (grid->getOffense() < grid->getDefense())
+			stream << Player::typeToString(grid->getOffense()) << " won!\n";
+		else
+			if (grid->getOffense() == grid->getDefense())
+				stream << "It was a tie!\n";
+			else
+				stream << Player::typeToString(grid->getDefense()) << " won!\n";
+	}
 	stream << "Player " << (curPlayer + 1) << ", press the\nspacebar to begin your\nturn.";
 	setInfo(stream.str());
 	waiting = 1;

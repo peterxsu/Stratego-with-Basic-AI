@@ -66,6 +66,10 @@ public:
 	//both player's pieces visible
 	void setPlayer(int p) { curPlayer = p; }
 
+	int getAttack() { return attack; }
+	int getOffense() { return off; }
+	int getDefense() { return def; }
+
 	virtual void draw(sf::RenderTarget &, sf::RenderStates) const;
 
 	//converts world coordinate to grid coordinate. world coordinates are pixels.
@@ -88,6 +92,8 @@ private:
 	int isOver;
 	int winner;
 	int revealed;
+	int attack;
+	int off, def;
 
 	int curPlayer;
     
