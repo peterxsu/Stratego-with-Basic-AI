@@ -40,6 +40,7 @@ public:
 	void setInfo(string str);
 	void setInfoHeight(int h);
 	void drawInfo();
+	void switchPlayers();
 
 private:
 
@@ -55,6 +56,8 @@ private:
 	//which piece is selected to move?
 	Actor * selectedPiece;
 	int selectedX, selectedY;
+	//is it between players' turns?	
+	int waiting;
 
 	// Graphics resources
 	sf::RenderWindow win;
@@ -77,7 +80,14 @@ private:
 		PLAY,
 	};
 
+	enum MenuState
+	{
+		MAIN,
+		OPTIONS,
+	};
+
 	GameState state;
+	MenuState menuState;
 
 };
 

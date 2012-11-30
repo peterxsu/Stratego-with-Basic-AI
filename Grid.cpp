@@ -38,6 +38,7 @@ Grid::Grid()
 
 	winner = 0;
 	isOver = 0;
+	revealed = 1;
 
 	curPlayer = 0;
 }
@@ -317,7 +318,7 @@ void Grid::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
 					target.draw(tileSprite, states);
 				
-					if (team == curPlayer || curPlayer == 2)
+					if ((team == curPlayer || curPlayer == 2) && revealed != 0)
 					{
 						charSprite.setTexture(actorChars[type]);
 						charSprite.setPosition(i * 60, j * 60);

@@ -58,6 +58,8 @@ public:
     
 	int getOver() { return isOver; }
 	int getWinner() { return winner; }
+	void setRevealed(int r) { revealed = r; }
+	int getRevealed() { return revealed; }
 
 	//sets the current player to assist drawing.
 	//a current player of -1 makes no one's pieces visible, and a current player of 2 makes
@@ -85,6 +87,7 @@ private:
 	Actor *** grid;
 	int isOver;
 	int winner;
+	int revealed;
 
 	int curPlayer;
     
