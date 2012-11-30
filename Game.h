@@ -11,6 +11,7 @@ using namespace std;
 #include "Grid.h"
 #include "Player.h"
 #include "Input.h"
+#include "AI.h"
 
 class Game
 {
@@ -36,6 +37,11 @@ public:
 	sf::Vector2f getMousePos();
 	int button(int x, int y, sf::Texture texture);
 	void highlightTile(int x, int y, sf::Color col);
+	void drawBg();
+	void setInfo(string str);
+	void setInfoHeight(int h);
+	void drawInfo();
+	void switchPlayers();
 
 private:
 
@@ -48,6 +54,14 @@ private:
 	int curPlayer;
 	//which type of piece is being placed?
 	int placePiece;
+	//which piece is selected to move?
+	Actor * selectedPiece;
+	int selectedX, selectedY;
+	//is it between players' turns?	
+	int waiting;
+	//player mode - 0 = h vs h, 1 = h vs ai, 2 = ai vs ai
+	int playerMode;
+	int spaceDown;
 
 	// Graphics resources
 	sf::RenderWindow win;
@@ -56,8 +70,9 @@ private:
 	sf::Font font;
 	sf::Texture bg;
 	sf::Texture title;
-	sf::Texture playImg;
-	sf::Texture optionsImg;
+	sf::Texture buttons[3];
+	sf::RenderTexture infoImg;
+	int infoHeight;
 
 	//-----------------------------------------------------
 
@@ -68,7 +83,14 @@ private:
 		PLAY,
 	};
 
+	enum MenuState
+	{
+		MAIN,
+		OPTIONS,
+	};
+
 	GameState state;
+	MenuState menuState;
 
 };
 
