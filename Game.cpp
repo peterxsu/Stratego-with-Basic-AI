@@ -22,6 +22,8 @@ Game::Game()
 	waiting = 0;
 
 	playerMode = 0;
+
+	spaceDown = 0;
 }
 
 Game::~Game()
@@ -121,6 +123,7 @@ bool Game::run()
 	}
 
 	input->getInput();
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) == 0) spaceDown = 0;
 
 	//------------------------------------------------------
 
@@ -189,8 +192,9 @@ void Game::playGame()
 	{
 		if (waiting == 1)
 		{
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && spaceDown == 0)
 			{
+				spaceDown = 1;
 				waiting = 0;
 				grid->setRevealed(1);
 				if (curPlayer == 0)
@@ -344,6 +348,7 @@ void Game::setupGame()
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && players[curPlayer]->getTotalLeft() == 0)
 	{
+		spaceDown = 1;
 		if (curPlayer == 0)
 		{
 			setPlayer(1);
@@ -351,9 +356,8 @@ void Game::setupGame()
 		}
 		else
 		{
-			setPlayer(0);
+			switchPlayers();
 			state = PLAY;
-			setInfo("Player 1, click a\npiece to move it.");
 		}
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))

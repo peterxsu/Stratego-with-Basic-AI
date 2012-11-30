@@ -61,6 +61,7 @@ private:
 	int waiting;
 	//player mode - 0 = h vs h, 1 = h vs ai, 2 = ai vs ai
 	int playerMode;
+	int spaceDown;
 
 	// Graphics resources
 	sf::RenderWindow win;
