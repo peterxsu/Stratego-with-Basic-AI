@@ -11,6 +11,7 @@ using namespace std;
 #include "Grid.h"
 #include "Player.h"
 #include "Input.h"
+#include "AI.h"
 
 class Game
 {
@@ -58,6 +59,8 @@ private:
 	int selectedX, selectedY;
 	//is it between players' turns?	
 	int waiting;
+	//player mode - 0 = h vs h, 1 = h vs ai, 2 = ai vs ai
+	int playerMode;
 
 	// Graphics resources
 	sf::RenderWindow win;
@@ -66,8 +69,7 @@ private:
 	sf::Font font;
 	sf::Texture bg;
 	sf::Texture title;
-	sf::Texture playImg;
-	sf::Texture optionsImg;
+	sf::Texture buttons[3];
 	sf::RenderTexture infoImg;
 	int infoHeight;
 

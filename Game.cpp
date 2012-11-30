@@ -20,6 +20,8 @@ Game::Game()
 	infoHeight = 0;
 
 	waiting = 0;
+
+	playerMode = 0;
 }
 
 Game::~Game()
@@ -42,8 +44,9 @@ bool Game::init()
 
 	input = new Input;
 
-	playImg.loadFromFile("play.png");
-	optionsImg.loadFromFile("options.png");
+	buttons[0].loadFromFile("hvh.png");
+	buttons[1].loadFromFile("hva.png");
+	buttons[2].loadFromFile("ava.png");
 
 	Grid::loadResources();
 
@@ -57,8 +60,21 @@ void Game::reset()
 	if (players[1]) delete players[1];
 
 	grid = new Grid();
-	players[0] = new Player(0, grid);
-	players[1] = new Player(1, grid);
+	switch (playerMode)
+	{
+	case 0:
+		players[0] = new Player(0, grid);
+		players[1] = new Player(1, grid);
+		break;
+	case 1:
+		players[0] = new Player(0, grid);
+		players[1] = new AI(1, grid);
+		break;
+	case 2:
+		players[0] = new AI(0, grid);
+		players[1] = new AI(1, grid);
+		break;
+	}	
 
 	curPlayer = 0;
 	selectedPiece = NULL;
@@ -145,11 +161,14 @@ void Game::cleanUp()
 void Game::displayMenu()
 {
 	win.draw(sf::Sprite(title), transform);
-	button(400, 500, optionsImg);
-	if (button(400, 400, playImg))
+	for (int i = 0; i < 3; i++)
 	{
-		reset();
-		state = SET;
+		if (button(400, 400 + 60 * i, buttons[i]))
+		{
+			playerMode = i;
+			reset();
+			state = SET;
+		}
 	}
 }
 
