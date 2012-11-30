@@ -14,6 +14,16 @@ Game::Game()
 
 	curPlayer = 0;
 	placePiece = 0;
+	selectedPiece = NULL;
+	selectedX = 0;
+	selectedY = 0;
+	infoHeight = 0;
+
+	waiting = 0;
+
+	playerMode = 0;
+
+	spaceDown = 0;
 }
 
 Game::~Game()
@@ -23,19 +33,22 @@ Game::~Game()
 bool Game::init()
 {	 
 	state = MENU;
+	menuState = MAIN;
 
-	win.create(sf::VideoMode(800, 600), "Stratego");
+	win.create(sf::VideoMode(800, 600), "Stratego");//, sf::Style::Fullscreen);
 	view = sf::View(sf::FloatRect(0, 0, 800, 600));
 	transform = sf::Transform::Identity;
 
-	input = new Input;
 
-	if (!font.loadFromFile("dum1.ttf")) return false;
+	if (!font.loadFromFile("Sansation_Regular.ttf")) return false;
 	if (!bg.loadFromFile("bg.png")) return false;
 	if (!title.loadFromFile("title.png")) return false;
 
-	playImg.loadFromFile("play.png");
-	optionsImg.loadFromFile("options.png");
+	input = new Input;
+
+	buttons[0].loadFromFile("hvh.png");
+	buttons[1].loadFromFile("hva.png");
+	buttons[2].loadFromFile("ava.png");
 
 	Grid::loadResources();
 
@@ -49,12 +62,33 @@ void Game::reset()
 	if (players[1]) delete players[1];
 
 	grid = new Grid();
-	players[0] = new Player(0, grid);
-	players[1] = new Player(1, grid);
+	switch (playerMode)
+	{
+	case 0:
+		players[0] = new Player(0, grid);
+		players[1] = new Player(1, grid);
+		break;
+	case 1:
+		players[0] = new Player(0, grid);
+		players[1] = new AI(1, grid);
+		break;
+	case 2:
+		players[0] = new AI(0, grid);
+		players[1] = new AI(1, grid);
+		break;
+	}	
 
 	curPlayer = 0;
+	selectedPiece = NULL;
+	placePiece = 0;
+	selectedX = 0;
+	selectedY = 0;
+	infoHeight = 240;
 
 	setPlayer(0);
+	setInfo("Player 1, place your\npieces.\nPress space when\nyou're done.");
+
+	waiting = 0;
 }
 
 bool Game::run()
@@ -68,6 +102,13 @@ bool Game::run()
 		{
 			return false;
 		}
+		if (e.type == sf::Event::KeyPressed)
+		{
+			if (e.key.code == sf::Keyboard::Escape)
+			{
+				return false;
+			}
+		}
 		if (e.type == sf::Event::Resized)
 		{
 			float width = win.getSize().x;
@@ -77,12 +118,12 @@ bool Game::run()
 			win.setView(view);
 			transform = sf::Transform::Identity;
 			float scale = min(view.getSize().x / 800.0f, view.getSize().y / 600.0f);
-
 			transform.scale(scale, scale);
 		}
 	}
 
 	input->getInput();
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) == 0) spaceDown = 0;
 
 	//------------------------------------------------------
 
@@ -91,6 +132,7 @@ bool Game::run()
 	switch (state)
 	{
 	case MENU:
+		win.clear(sf::Color(120, 150, 230, 255));
 		displayMenu();
 		break;
 
@@ -122,45 +164,132 @@ void Game::cleanUp()
 void Game::displayMenu()
 {
 	win.draw(sf::Sprite(title), transform);
-	button(400, 500, optionsImg);
-	if (button(400, 400, playImg))
+	for (int i = 0; i < 3; i++)
 	{
-		reset();
-		state = SET;
+		if (button(400, 400 + 60 * i, buttons[i]))
+		{
+			playerMode = i;
+			reset();
+			state = SET;
+		}
 	}
 }
 
 void Game::playGame()
 {
-	while (!grid->getOver())
+	drawBg();
+	win.draw(*grid, transform);
+	drawInfo();
+
+
+	if (grid->getOver())
 	{
-		setPlayer(0);
-		win.clear();
-		win.draw(*grid);
-		win.display();
-		players[0]->makeMove();
-		setPlayer(1);
-		win.clear();
-		win.draw(*grid);
-		win.display();
-		players[1]->makeMove();
+		//game is over, do something
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			state = MENU;
+	}
+	else
+	{
+		if (waiting == 1)
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && spaceDown == 0)
+			{
+				spaceDown = 1;
+				waiting = 0;
+				grid->setRevealed(1);
+				if (curPlayer == 0)
+					setInfo("Player 1, click on\n a piece to move it.");
+				else
+					setInfo("Player 2, click on\n a piece to move it.");
+			}
+		}
+		else
+		{
+			sf::Vector2i tpos;
+			tpos.x = getMousePos().x / 60.0f;
+			tpos.y = getMousePos().y / 60.0f;
+			if (input->getMouseState(0) == Input::PRESSED)
+			{
+				if (grid->getActor(tpos.x, tpos.y))
+				{
+					if (grid->getActor(tpos.x, tpos.y)->getTeam() == curPlayer)
+					{
+						selectedPiece = grid->getActor(tpos.x, tpos.y);
+						selectedX = tpos.x;
+						selectedY = tpos.y;
+					}
+				}
+			}
+
+			if (selectedPiece)
+			{
+				highlightTile(selectedX, selectedY, sf::Color(0, 0, 255, 80));
+				if (selectedPiece->getType() == 9)
+				{
+					for (int x = 0; x < 10; x++)
+					{
+						if (grid->isValidMove(selectedX, selectedY, x, selectedY, players[curPlayer]))
+						{
+							highlightTile(x, selectedY, sf::Color(255, 255, 0, 100));
+						}
+					}
+					for (int y = 0; y < 10; y++)
+					{
+						if (grid->isValidMove(selectedX, selectedY, selectedX, y, players[curPlayer]))
+						{
+							highlightTile(selectedX, y, sf::Color(255, 255, 0, 100));
+						}
+					}
+				}
+				else
+				{
+					if (grid->isValidMove(selectedX, selectedY, selectedX - 1, selectedY, players[curPlayer]))
+						highlightTile(selectedX - 1, selectedY, sf::Color(255, 255, 0, 100));
+					if (grid->isValidMove(selectedX, selectedY, selectedX + 1, selectedY, players[curPlayer]))
+						highlightTile(selectedX + 1, selectedY, sf::Color(255, 255, 0, 100));
+					if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY - 1, players[curPlayer]))
+						highlightTile(selectedX, selectedY - 1, sf::Color(255, 255, 0, 100));
+					if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY + 1, players[curPlayer]))
+						highlightTile(selectedX, selectedY + 1, sf::Color(255, 255, 0, 100));
+				}
+				if (input->getMouseState(0) == Input::PRESSED)
+				{
+					if (grid->isValidMove(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]))
+					{
+						grid->move(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]);
+						selectedPiece = NULL;
+						//if the game is over then we make both player's pieces visible
+						//otherwise change to other player
+						if (!grid->getOver())
+						{
+							/*
+							if (curPlayer == 0)
+								//setInfo("Player 2, click on\n a piece to move it.");
+							
+							else
+								setInfo("Player 1, click on\n a piece to move it."); */
+							switchPlayers();
+						}
+						else
+						{
+							if (grid->getWinner() == 0)
+								setInfo("Player 1, you win!\nPress space to return\nto the main menu.");
+							else
+								setInfo("Player 2, you win!\nPress space to reutnr\nto the main menu.");
+							setPlayer(2);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
 void Game::setupGame()
 {
-	sf::Sprite bgspr(bg);
-	bgspr.setPosition(0, 0);
-	win.draw(bgspr, transform);
+	drawBg();
 	win.draw(*grid, transform);
-
-	stringstream stream;
-	stream << "Player " << (curPlayer + 1) << ", place";
-
-	
-
-	win.draw(getText(615, 5, stream.str(), 35, sf::Color(255, 255, 255, 255)), transform);
-	win.draw(getText(615, 25, "your pieces.", 35, sf::Color(255, 255, 255, 255)), transform);
+	drawInfo();
 
 	sf::Sprite tileSprite;
 	sf::Sprite tileBgSprite;
@@ -169,8 +298,8 @@ void Game::setupGame()
 	for (int i = 0; i <= 11; i++)
 	{
 		tileSprite.setTexture(Grid::actorChars[i]);
-		tileSprite.setPosition(610 + 70 * (i >= 6), 150 + i % 6 * 60);
-		tileBgSprite.setPosition(610 + 70 * (i >= 6), 150 + i % 6 * 60);
+		tileSprite.setPosition(610 + 54 * (i >= 6), 264 + i % 6 * 54);
+		tileBgSprite.setPosition(610 + 54 * (i >= 6), 264 + i % 6 * 54);
 		sf::FloatRect rect(tileSprite.getGlobalBounds());
 		if (mouseOver(rect.left, rect.top, rect.left + rect.width, rect.top + rect.height) || placePiece == i)
 		{
@@ -219,10 +348,21 @@ void Game::setupGame()
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && players[curPlayer]->getTotalLeft() == 0)
 	{
+		spaceDown = 1;
 		if (curPlayer == 0)
+		{
 			setPlayer(1);
+			setInfo("Player 2, place your\npieces.\nPress space when\nyou're done.");
+		}
 		else
+		{
+			switchPlayers();
 			state = PLAY;
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+	{
+		players[curPlayer]->autoPlacePieces();
 	}
 
 }
@@ -290,3 +430,78 @@ void Game::highlightTile(int x, int y, sf::Color col)
 	rect.setFillColor(col);
 	win.draw(rect, transform);
 }
+
+void Game::drawBg()
+{
+	sf::Sprite spr(bg);
+	spr.setPosition(0, 0);
+	win.draw(spr, transform);
+}
+
+void Game::setInfo(string str)
+{
+	infoImg.create(170, infoHeight);
+	infoImg.clear(sf::Color(255, 255, 255, 255));
+
+	sf::Text text;
+	text.setFont(font);
+	text.setString(str);
+	text.setPosition(10, 10);
+	text.setColor(sf::Color(0, 0, 0, 255));
+	text.setCharacterSize(14);
+	
+	infoImg.draw(text);
+
+	sf::RectangleShape rect(sf::Vector2f(168, infoHeight - 2));
+	rect.setOutlineThickness(2);
+	rect.setOutlineColor(sf::Color(0, 0, 0, 255));
+	rect.setFillColor(sf::Color(0, 0, 0, 0));
+	rect.setPosition(1, 1);
+
+	infoImg.draw(rect);
+
+	infoImg.display();
+}
+
+void Game::setInfoHeight(int h)
+{
+	infoHeight = h;
+}
+
+void Game::drawInfo()
+{
+	sf::Sprite infoSpr(infoImg.getTexture());
+	infoSpr.setPosition(615, 15);
+	win.draw(infoSpr, transform);
+}
+
+void Game::switchPlayers()
+{
+	setPlayer(1 - curPlayer);
+	stringstream stream;
+	if (grid->getAttack())
+	{
+		stream << Player::typeToString(grid->getOffense()) << " attacked\n" << Player::typeToString(grid->getDefense()) << "!\n";
+		if (grid->getOffense() < grid->getDefense())
+			stream << Player::typeToString(grid->getOffense()) << " won!\n";
+		else
+			if (grid->getOffense() == grid->getDefense())
+				stream << "It was a tie!\n";
+			else
+				stream << Player::typeToString(grid->getDefense()) << " won!\n";
+	}
+	stream << "Player " << (curPlayer + 1) << ", press the\nspacebar to begin your\nturn.";
+	setInfo(stream.str());
+	waiting = 1;
+	grid->setRevealed(0);
+}
+
+
+
+
+
+
+
+
+
+

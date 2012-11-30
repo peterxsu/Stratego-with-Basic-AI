@@ -58,8 +58,17 @@ public:
     
 	int getOver() { return isOver; }
 	int getWinner() { return winner; }
+	void setRevealed(int r) { revealed = r; }
+	int getRevealed() { return revealed; }
 
+	//sets the current player to assist drawing.
+	//a current player of -1 makes no one's pieces visible, and a current player of 2 makes
+	//both player's pieces visible
 	void setPlayer(int p) { curPlayer = p; }
+
+	int getAttack() { return attack; }
+	int getOffense() { return off; }
+	int getDefense() { return def; }
 
 	virtual void draw(sf::RenderTarget &, sf::RenderStates) const;
 
@@ -74,7 +83,7 @@ public:
 
 	static void loadResources();
 	
-	static sf::Texture actorChars[11];
+	static sf::Texture actorChars[12];
 	static sf::Texture actorTiles[2];
     
 private:
@@ -82,6 +91,9 @@ private:
 	Actor *** grid;
 	int isOver;
 	int winner;
+	int revealed;
+	int attack;
+	int off, def;
 
 	int curPlayer;
     

@@ -28,6 +28,10 @@ public:
 	void choosePlacement(int &, int &);
 	Actor* findPiece(int);
 	int getTeam();
+	int getHuman() { return isHuman; }
+
+	//automatically places pieces for debugging purposes
+	void autoPlacePieces();
 
 	int getLeft(int type);
 	int getTotalLeft();
@@ -44,6 +48,7 @@ protected:
 	int team;
 	Grid * grid;
 	Actor ** actors;
+	int isHuman;
 
 private:
 
