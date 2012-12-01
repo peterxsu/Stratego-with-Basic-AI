@@ -24,6 +24,7 @@ class Grid : public sf::Drawable
 public:
     
 	Grid();
+	Grid(Grid*);
 	~Grid();
     
 	// adds an actor to the grid at the specified
@@ -41,14 +42,14 @@ public:
 	// returns 1 if the move was successful
 	// 0 otherwise
     // passes in x1 y1 x2 y2
-	int move(int, int, int, int, Player *);
+	int move(int, int, int, int, int);
 	
 	// returns true if the move is valid
 	// false otherwise
 	// should check to see if the move is within the range of the piece that is being moved, i.e. the piece isn't being moved diagonally
 	// should check to see if the piece is being moved to a space that isn't currently occupied
     // passes in x1 y1 x2 y2
-	bool isValidMove(int, int, int, int, Player *);
+	bool isValidMove(int, int, int, int, int);
 
 	// returns the actor occupying a location
 	Actor * getActor(int, int);
