@@ -13,3 +13,10 @@ Actor::Actor(int ty, int te)
 	team = te;
 	isPlaced = 0;
 }
+
+Actor::Actor(Actor* a)
+{
+	isPlaced = a->isPlaced;
+	type = a->type;
+	team = a->team;
+}
