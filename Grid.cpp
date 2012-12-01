@@ -44,6 +44,30 @@ Grid::Grid()
 	def = 0;
 	curPlayer = 0;
 }
+
+Grid::Grid(Grid* g)
+{
+	grid = new Actor**[SIZE];
+	for (int i = 0; i < SIZE; i++)
+	{
+		grid[i] = new Actor*[SIZE];
+		for (int j = 0; j < SIZE; j++)
+		{
+			if (!g->getActor(i, j))
+				grid[i][j] = NULL;
+			else
+				grid[i][j] = new Actor(g->getActor(i, j));
+		}
+	}
+	winner = 0;
+	isOver = 0;
+	revealed = 1;
+	attack = 0;
+	off = 0;
+	def = 0;
+	curPlayer = 0;
+}
+
 Grid::~Grid()
 {
 	for (int i = 0; i < SIZE; i++)
@@ -82,13 +106,12 @@ int Grid::remove(int x, int y)
         return 0;
 }
 
-int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
+int Grid::move(int x1, int y1, int x2, int y2, int team)
 {
 	attack = 0;
 
-    if(isValidMove(x1,y1,x2,y2,p))
+    if(isValidMove(x1,y1,x2,y2,team))
     {
-        //write shit here
         if(grid[x2][y2]==NULL)
         {
             grid[x2][y2]=grid[x1][y1];
@@ -97,20 +120,19 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         }
         if(grid[x2][y2]->getType()==11)//checks to see if it is moving into flag. Will need win function later
         {
-            //WINNER!!!
-		isOver = 1;
-		winner = p->getTeam();
-		remove(x2, y2);
-		grid[x2][y2] = grid[x1][y1];
-		grid[x1][y1] = NULL;
-		setPlayer(2);
-            	return 1;
+			isOver = 1;
+			winner = team;
+			remove(x2, y2);
+			grid[x2][y2] = grid[x1][y1];
+			grid[x1][y1] = NULL;
+			setPlayer(2);
+            return 1;
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
         {
-		attack = 1;
-		off = grid[x1][y1]->getType();
-		def = grid[x2][y2]->getType();
+			attack = 1;
+			off = grid[x1][y1]->getType();
+			def = grid[x2][y2]->getType();
 
             grid[x2][y2]->setPlaced(0);
             grid[x2][y2]=grid[x1][y1];
@@ -119,9 +141,9 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         }
         if(grid[x1][y1]->getType() == grid[x2][y2]->getType())
         {
-		attack = 1;
-		off = grid[x1][y1]->getType();
-		def = grid[x2][y2]->getType();
+			attack = 1;
+			off = grid[x1][y1]->getType();
+			def = grid[x2][y2]->getType();
             grid[x1][y1]->setPlaced(0);
             grid[x2][y2]->setPlaced(0);
             grid[x1][y1]=NULL;
@@ -130,9 +152,9 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         }
         else//weaker piece is moving
         {
-		attack = 1;
-		off = grid[x1][y1]->getType();
-		def = grid[x2][y2]->getType();
+			attack = 1;
+			off = grid[x1][y1]->getType();
+			def = grid[x2][y2]->getType();
             grid[x1][y1]->setPlaced(0);
             grid[x1][y1]=NULL;
             return 1;
@@ -143,7 +165,7 @@ int Grid::move(int x1, int y1, int x2, int y2, Player * p)//not done
         return 0;
 }
 
-bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
+bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
 {
 	if(x1>=10 || y1>=10 || x2>=10 || y2>=10 || x1<0 || y1<0 || x2<0 || y2<0)
 		return false;
@@ -156,7 +178,7 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, Player * p)
 	{
         	return false;
 	}
-    	if(p->getTeam()!=grid[x1][y1]->getTeam())//checks to make sure right team is moving
+    	if(team!=grid[x1][y1]->getTeam())//checks to make sure right team is moving
     	{
         	return false;
     	}
