@@ -228,14 +228,14 @@ void Game::playGame()
 				{
 					for (int x = 0; x < 10; x++)
 					{
-						if (grid->isValidMove(selectedX, selectedY, x, selectedY, players[curPlayer]))
+						if (grid->isValidMove(selectedX, selectedY, x, selectedY, players[curPlayer]->getTeam()))
 						{
 							highlightTile(x, selectedY, sf::Color(255, 255, 0, 100));
 						}
 					}
 					for (int y = 0; y < 10; y++)
 					{
-						if (grid->isValidMove(selectedX, selectedY, selectedX, y, players[curPlayer]))
+						if (grid->isValidMove(selectedX, selectedY, selectedX, y, players[curPlayer]->getTeam()))
 						{
 							highlightTile(selectedX, y, sf::Color(255, 255, 0, 100));
 						}
@@ -243,20 +243,20 @@ void Game::playGame()
 				}
 				else
 				{
-					if (grid->isValidMove(selectedX, selectedY, selectedX - 1, selectedY, players[curPlayer]))
+					if (grid->isValidMove(selectedX, selectedY, selectedX - 1, selectedY, players[curPlayer]->getTeam()))
 						highlightTile(selectedX - 1, selectedY, sf::Color(255, 255, 0, 100));
-					if (grid->isValidMove(selectedX, selectedY, selectedX + 1, selectedY, players[curPlayer]))
+					if (grid->isValidMove(selectedX, selectedY, selectedX + 1, selectedY, players[curPlayer]->getTeam()))
 						highlightTile(selectedX + 1, selectedY, sf::Color(255, 255, 0, 100));
-					if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY - 1, players[curPlayer]))
+					if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY - 1, players[curPlayer]->getTeam()))
 						highlightTile(selectedX, selectedY - 1, sf::Color(255, 255, 0, 100));
-					if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY + 1, players[curPlayer]))
+					if (grid->isValidMove(selectedX, selectedY, selectedX, selectedY + 1, players[curPlayer]->getTeam()))
 						highlightTile(selectedX, selectedY + 1, sf::Color(255, 255, 0, 100));
 				}
 				if (input->getMouseState(0) == Input::PRESSED)
 				{
-					if (grid->isValidMove(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]))
+					if (grid->isValidMove(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]->getTeam()))
 					{
-						grid->move(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]);
+						grid->move(selectedX, selectedY, tpos.x, tpos.y, players[curPlayer]->getTeam());
 						selectedPiece = NULL;
 						//if the game is over then we make both player's pieces visible
 						//otherwise change to other player

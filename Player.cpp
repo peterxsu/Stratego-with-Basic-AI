@@ -50,8 +50,8 @@ void Player::makeMove()
 	do
 	{
 		chooseDestination(x2, y2);
-	}while(!grid->isValidMove(x1, y1, x2, y2, this));
-	grid->move(x1, y1, x2, y2, this);
+	}while(!grid->isValidMove(x1, y1, x2, y2, team));
+	grid->move(x1, y1, x2, y2, team);
 }
 
 void Player::choosePieceMove(int &x, int &y)
@@ -203,7 +203,7 @@ MoveList* Player::getPossibleMoves()
 			currentActor = grid->getActor(x, y);
 			if(currentActor && currentActor->getTeam() == team && currentActor->getType() > 0 && currentActor->getType() < 11)
 			{
-				if(grid->isValidMove(x, y, x-1, y, this))
+				if(grid->isValidMove(x, y, x-1, y, team))
 				{
 					newMove = new MoveList;
 					newMove->x1 = x;
@@ -220,7 +220,7 @@ MoveList* Player::getPossibleMoves()
 				if(currentActor->getType() == 9)
 				{
 					int distance = 2;
-					while(grid->isValidMove(x, y, x-distance, y, this))
+					while(grid->isValidMove(x, y, x-distance, y, team))
 					{
 						newMove = new MoveList;
 						newMove->x1 = x;
@@ -236,7 +236,7 @@ MoveList* Player::getPossibleMoves()
 						distance++;
 					}
 				}
-				if(grid->isValidMove(x, y, x, y-1, this))
+				if(grid->isValidMove(x, y, x, y-1, team))
 				{
 					newMove = new MoveList;
 					newMove->x1 = x;
@@ -253,7 +253,7 @@ MoveList* Player::getPossibleMoves()
 				if(currentActor->getType() == 9)
 				{
 					int distance = 2;
-					while(grid->isValidMove(x, y, x, y-distance, this))
+					while(grid->isValidMove(x, y, x, y-distance, team))
 					{
 						newMove = new MoveList;
 						newMove->x1 = x;
@@ -269,7 +269,7 @@ MoveList* Player::getPossibleMoves()
 						distance++;
 					}
 				}
-				if(grid->isValidMove(x, y, x+1, y, this))
+				if(grid->isValidMove(x, y, x+1, y, team))
 				{
 					newMove = new MoveList;
 					newMove->x1 = x;
@@ -286,7 +286,7 @@ MoveList* Player::getPossibleMoves()
 				if(currentActor->getType() == 9)
 				{
 					int distance = 2;
-					while(grid->isValidMove(x, y, x+distance, y, this))
+					while(grid->isValidMove(x, y, x+distance, y, team))
 					{
 						newMove = new MoveList;
 						newMove->x1 = x;
@@ -302,7 +302,7 @@ MoveList* Player::getPossibleMoves()
 						distance++;
 					}
 				}
-				if(grid->isValidMove(x, y, x, y+1, this))
+				if(grid->isValidMove(x, y, x, y+1, team))
 				{
 					newMove = new MoveList;
 					newMove->x1 = x;
@@ -319,7 +319,7 @@ MoveList* Player::getPossibleMoves()
 				if(currentActor->getType() == 9)
 				{
 					int distance = 2;
-					while(grid->isValidMove(x, y, x, y+distance, this))
+					while(grid->isValidMove(x, y, x, y+distance, team))
 					{
 						newMove = new MoveList;
 						newMove->x1 = x;

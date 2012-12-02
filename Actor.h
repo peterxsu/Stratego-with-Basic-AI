@@ -12,6 +12,7 @@ public:
 
 	Actor();
 	Actor(int ty, int te);
+	Actor(Actor*);
 
 	int getTeam() { return team; }
 	int getType() { return type; }
