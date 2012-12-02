@@ -65,16 +65,16 @@ void Game::reset()
 	switch (playerMode)
 	{
 	case 0:
-		players[0] = new Player(0, grid);
-		players[1] = new Player(1, grid);
+		players[0] = new Player(1, 0, grid);
+		players[1] = new Player(1, 1, grid);
 		break;
 	case 1:
-		players[0] = new Player(0, grid);
-		players[1] = new AI(1, grid);
+		players[0] = new Player(1, 0, grid);
+		players[1] = new Player(0, 1, grid);
 		break;
 	case 2:
-		players[0] = new AI(0, grid);
-		players[1] = new AI(1, grid);
+		players[0] = new Player(0, 0, grid);
+		players[1] = new Player(0, 1, grid);
 		break;
 	}	
 
@@ -287,6 +287,22 @@ void Game::playGame()
 
 void Game::setupGame()
 {
+	if (!players[curPlayer]->getHuman())
+	{
+		if (curPlayer == 0)
+		{
+			setPlayer(1);
+			setInfo("Player 2, place your\npieces.\nPress space when\nyou're done.");
+		}
+		else
+		{
+			players[curPlayer]->placePieces();
+			switchPlayers();
+			state = PLAY;
+			return;
+		}
+		
+	}
 	drawBg();
 	win.draw(*grid, transform);
 	drawInfo();
@@ -362,7 +378,9 @@ void Game::setupGame()
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 	{
-		players[curPlayer]->autoPlacePieces();
+		//players[curPlayer]->autoPlacePieces();
+		players[curPlayer]->removeAll();
+		if (!players[curPlayer]->loadPlacement("template1.dat")) cout << "error\n";
 	}
 
 }

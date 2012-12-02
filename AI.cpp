@@ -1,5 +1,9 @@
 #include "AI.h"
 
+#include <iostream>
+
+using namespace std;
+
 AI::AI() : Player(0, NULL)
 {
 }
@@ -13,5 +17,9 @@ AI::~AI()
 {
 }
 
+void AI::placePieces()
+{
+	cout << "placed\n";
+}
 
 

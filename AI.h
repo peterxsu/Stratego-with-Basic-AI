@@ -14,6 +14,8 @@ public:
 	AI(int, Grid *);
 	~AI();
 
+	void placePieces();
+
 private:
 
 };
