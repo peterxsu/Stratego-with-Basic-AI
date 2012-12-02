@@ -85,6 +85,9 @@ public:
 	
 	static sf::Texture actorChars[12];
 	static sf::Texture actorTiles[2];
+
+	void setEvaluation(int e) { evaluation = e; }
+	int getEvaluation() { return evaluation; }
     
 private:
     
@@ -96,6 +99,8 @@ private:
 	int off, def;
 
 	int curPlayer;
+
+	int evaluation;
     
 };
 
