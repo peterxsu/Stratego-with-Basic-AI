@@ -97,7 +97,7 @@ private:
 	int off, def;
 
 	int curPlayer;
-    
+
 };
 
 #endif
