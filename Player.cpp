@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "Player.h"
 #include "Grid.h"
@@ -7,11 +8,11 @@
 using namespace std;
 
 
-Player::Player(int t, Grid* g)
+Player::Player(int h, int t, Grid* g)
 {
+	isHuman = h;
 	team = t;
 	grid = g;
-	isHuman = 1;
 	actors = new Actor*[40];
 	actors[0] = new Actor(1, team);
 	actors[1] = new Actor(2, team);
@@ -76,14 +77,7 @@ void Player::chooseDestination(int &x, int &y)
 
 void Player::placePieces()
 {
-	Actor * a = NULL;
-	for (int x = 0; x < 40; x++)
-	{
-		int i = 0,j = 0;
-		a = choosePiece();
-		choosePlacement(i,j);
-		grid->add(a, i, j);
-	}
+	loadPlacement("template1.dat");
 }
 
 Actor* Player::choosePiece()
@@ -357,6 +351,49 @@ void Player::autoPlacePieces()
 				grid->remove(x, y);
 			grid->add(actors[i], x, y);
 			i++;
+		}
+	}
+}
+
+int Player::loadPlacement(string file)
+{
+	ifstream in;
+	in.open(file.c_str());
+	if (!in.is_open()) return 0;
+
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 4; y++)
+		{
+			int a;
+			in >> a;
+			if (getLeft(a) > 0)
+			{
+				int ax;
+				if (team == 1) ax = x;
+				else ax = 9 - x;
+				int ay;
+				if (team == 1) ay = 6 + y;
+				else ay = 3 - y;
+				grid->add(getNext(a), ax, ay);
+			}
+			else
+				return 0;
+		}
+	}
+
+	in.close();
+
+	return 1;
+}
+
+void Player::removeAll()
+{
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = team * 6; y < team * 6 + 4; y++)
+		{
+			grid->remove(x, y);
 		}
 	}
 }

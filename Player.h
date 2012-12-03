@@ -18,17 +18,23 @@ class Player
 {
 public:
 
-	Player(int, Grid*);
+	Player(int, int, Grid*);
 	~Player();
+
 	void makeMove();
+	void placePieces();
+
 	void choosePieceMove(int &, int &);
 	void chooseDestination(int &, int &);
-	void placePieces();
 	Actor* choosePiece();
 	void choosePlacement(int &, int &);
 	Actor* findPiece(int);
 	int getTeam();
 	int getHuman() { return isHuman; }
+	//loads piece placement from file
+	int loadPlacement(string file);
+
+	void removeAll();
 
 	//automatically places pieces for debugging purposes
 	void autoPlacePieces();
