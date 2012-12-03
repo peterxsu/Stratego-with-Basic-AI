@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Grid.h"
 #include "Actor.h"
+#include "Tree.h"
 
 using namespace std;
 
@@ -45,13 +46,17 @@ Player::~Player()
 
 void Player::makeMove()
 {
-	int x1, x2, y1, y2;
-	choosePieceMove(x1, y1);
-	do
-	{
-		chooseDestination(x2, y2);
-	}while(!grid->isValidMove(x1, y1, x2, y2, team));
+	// can't be called for human
+	if (isHuman == 1) return;
+	
+	Tree * tree = new Tree(grid, team);
+	tree->traverseTree();
+
+	
+	int x1, y1, x2, y2;
+	tree->returnMoveMemory(x1, y1, x2, y2);
 	grid->move(x1, y1, x2, y2, team);
+		
 }
 
 void Player::choosePieceMove(int &x, int &y)
@@ -77,6 +82,7 @@ void Player::chooseDestination(int &x, int &y)
 
 void Player::placePieces()
 {
+	if (isHuman == 1) return;
 	loadPlacement("template1.dat");
 }
 

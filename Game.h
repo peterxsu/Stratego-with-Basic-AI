@@ -11,7 +11,6 @@ using namespace std;
 #include "Grid.h"
 #include "Player.h"
 #include "Input.h"
-#include "AI.h"
 
 class Game
 {

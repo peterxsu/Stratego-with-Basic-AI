@@ -205,6 +205,32 @@ void Game::playGame()
 		}
 		else
 		{
+			if (!players[curPlayer]->getHuman())
+			{
+				players[curPlayer]->makeMove();
+				selectedPiece = NULL;
+				//if the game is over then we make both player's pieces visible
+				//otherwise change to other player
+				if (!grid->getOver())
+				{
+					/*
+					if (curPlayer == 0)
+						//setInfo("Player 2, click on\n a piece to move it.")
+							
+					else
+						setInfo("Player 1, click on\n a piece to move it."); */
+					switchPlayers();
+				}
+				else
+				{
+					if (grid->getWinner() == 0)
+						setInfo("Player 1, you win!\nPress space to return\nto the main menu.");
+					else
+						setInfo("Player 2, you win!\nPress space to reutnr\nto the main menu.");
+					setPlayer(2);
+				}
+				return;
+			}
 			sf::Vector2i tpos;
 			tpos.x = getMousePos().x / 60.0f;
 			tpos.y = getMousePos().y / 60.0f;

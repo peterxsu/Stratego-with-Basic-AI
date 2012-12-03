@@ -1,10 +1,17 @@
-#ifndef Heuristic_h
-#define Heuristic_h
+#ifndef TREE_H
+#define TREE_H
+
 #include <iostream>
+#include <cstdlib>
+
 #include "Grid.h"
 #include "Actor.h"
+
 #define MAX_DEPTH 5
 #define MATERIAL_CON 66
+
+using namespace std;
+
 enum Terminal
 {
 	win,loss
@@ -20,12 +27,13 @@ private:
         searches).This is going to be implemented via depth-first search(recursive). 
       
                      */
-	static Grid * state;
-	static int depth;
+	Grid * state;
+	int depth;
 	int team;
-	int calcEvaluationFunction(int,int,int,int,grid);
+	//int calcEvaluationFunction(int,int,int,int,Grid *);
+	int calcEvaluationFunction();
     int evaluation;
-    void updateeval(int);
+    void updateeval(int *, int *);
     void moveStore(int x1, int y1, int x2, int y2);
     int moveList[MAX_DEPTH][4];   //the movelist stores moves for every state we traverse through
     int moveMemory[4];  //This is the memory of the optimal move
@@ -36,7 +44,7 @@ private:
 public:
 	Tree(Grid*, int);
     int* traverseTree();
-    int[] returnMoveMemory();
+    void returnMoveMemory(int &, int &, int &, int &);
 
 };
 
@@ -60,7 +68,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 				currentActor = state->getActor(x,y);
 				if(currentActor && currentActor->getTeam() == team && currentActor->getType() > 0 && currentActor->getType() < 11)
 				{
-					if(grid->isValidMove(x, y, x-1, y, team))
+					if(state->isValidMove(x, y, x-1, y, team))
 					{
 						moveStore(x, y, x-1, y);
 						depth++;
@@ -80,7 +88,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x-distance, y, team))
+						while(state->isValidMove(x, y, x-distance, y, team))
 						{
 							moveStore(x, y, x-distance, y);
 							depth++;
@@ -99,7 +107,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 							distance++;
 						}
 					}
-					if(grid->isValidMove(x, y, x, y-1, team))
+					if(state->isValidMove(x, y, x, y-1, team))
 					{
 						moveStore(x, y, x, y-1);
 						depth++;
@@ -119,7 +127,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x, y-distance, team))
+						while(state->isValidMove(x, y, x, y-distance, team))
 						{
 							moveStore(x, y, x, y-distance);
 							depth++;
@@ -138,7 +146,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
                             delete temp2;
 						}
 					}
-					if(grid->isValidMove(x, y, x+1, y, team))
+					if(state->isValidMove(x, y, x+1, y, team))
 					{
 						moveStore(x, y, x+1, y);
 						depth++;
@@ -158,7 +166,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x+distance, y, team))
+						while(state->isValidMove(x, y, x+distance, y, team))
 						{
 							moveStore(x, y, x+distance, y);
 							depth++;
@@ -177,7 +185,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 							distance++;
 						}
 					}
-					if(grid->isValidMove(x, y, x, y+1, team))
+					if(state->isValidMove(x, y, x, y+1, team))
 					{
 						moveStore(x, y, x, y+1);
 						depth++;
@@ -197,7 +205,7 @@ int* Tree::traverseTree()          //This is an int, as I am recursively returni
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x, y+distance, team))
+						while(state->isValidMove(x, y, x, y+distance, team))
 						{
 							moveStore(x, y, x, y+distance);
 							depth++;
@@ -240,9 +248,10 @@ void Tree::moveStore(int x1, int y1, int x2, int y2)
 	moveList[depth][3] = y2;
 }
 
-int Tree::calcEvaluationFunction(int xin,int yin,int xfinal,int yfinal,Grid * previous)
+//int Tree::calcEvaluationFunction(int xin,int yin,int xfinal,int yfinal,Grid * previous)
+int Tree::calcEvaluationFunction()
 {
-          
+          return rand();
 }
 
 void Tree::updateeval(int * temp, int * evaluation)
@@ -281,9 +290,12 @@ void Tree::movecopy()
     moveMemory[3]=moveList[0][3];
 }
 
-int[] Tree::returnMoveMemory()
+void Tree::returnMoveMemory(int & x1, int & y1, int & x2, int & y2)
 {
-	return  moveMemory;
+	x1 = moveMemory[0];
+	y1 = moveMemory[1];
+	x2 = moveMemory[2];
+	y2 = moveMemory[3];
 }
 
 //remember
