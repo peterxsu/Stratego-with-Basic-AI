@@ -178,7 +178,14 @@ void Game::displayMenu()
 void Game::playGame()
 {
 	drawBg();
-	win.draw(*grid, transform);
+	if (players[curPlayer]->getHuman() == 0)
+	{
+		grid->setRevealed(0);
+		win.draw(*grid, transform);
+		grid->setRevealed(1);
+	}
+	else
+		win.draw(*grid, transform);
 	drawInfo();
 
 

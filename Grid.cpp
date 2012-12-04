@@ -8,6 +8,7 @@
 
 #include "Grid.h"
 #include "Player.h"
+#include "Tree2.h"
 
 #include <iostream>
 #include <iomanip>
