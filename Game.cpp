@@ -328,6 +328,7 @@ void Game::setupGame()
 	{
 		if (curPlayer == 0)
 		{
+			players[curPlayer]->placePieces();
 			setPlayer(1);
 			setInfo("Player 2, place your\npieces.\nPress space when\nyou're done.");
 		}

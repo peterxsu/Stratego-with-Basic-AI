@@ -3,7 +3,7 @@
 
 #include "Grid.h"
 
-#define SEARCH_DEPTH 6
+#define SEARCH_DEPTH 4
 
 struct Move
 {
