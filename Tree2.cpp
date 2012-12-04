@@ -15,6 +15,11 @@ Tree::Tree(Grid * g)
 	state = new Grid(g);
 }
 
+Tree::~Tree()
+{
+	delete state;
+}
+
 Move * Tree::search(int team, int depth, int & val)
 {
 	vector<int> values;

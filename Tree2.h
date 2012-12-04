@@ -19,6 +19,7 @@ public:
 
 	Tree();
 	Tree(Grid *);
+	~Tree();
 
 	//recursively searches the CURRENT GRID STATE for the move with the max/min value (depending on which team is going)
 	Move * search(int team, int depth, int & val);
