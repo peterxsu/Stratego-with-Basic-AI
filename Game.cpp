@@ -231,6 +231,10 @@ void Game::playGame()
 				}
 				return;
 			}
+			if (input->getMouseState(1) == Input::PRESSED)
+			{
+				grid->undoMove();
+			}
 			sf::Vector2i tpos;
 			tpos.x = getMousePos().x / 60.0f;
 			tpos.y = getMousePos().y / 60.0f;

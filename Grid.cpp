@@ -112,6 +112,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
 
     if(isValidMove(x1,y1,x2,y2,team))
     {
+	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2]);
+	history.push_back(past);
+
         if(grid[x2][y2]==NULL)
         {
             grid[x2][y2]=grid[x1][y1];
@@ -163,6 +166,25 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
     }
     else
         return 0;
+}
+
+void Grid::undoMove()
+{
+	if (history.size() > 0)
+	{
+		PastMove p = history.back();
+		history.pop_back();
+		if (grid[p.x1][p.y1])
+			grid[p.x1][p.y1]->setPlaced(0);
+		if (grid[p.x2][p.y2])
+			grid[p.x2][p.y2]->setPlaced(0);
+		grid[p.x1][p.y1] = p.a1;
+		grid[p.x2][p.y2] = p.a2;
+		if (grid[p.x1][p.y1])
+			grid[p.x1][p.y1]->setPlaced(1);
+		if (grid[p.x2][p.y2])
+			grid[p.x2][p.y2]->setPlaced(1);
+	}
 }
 
 bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)

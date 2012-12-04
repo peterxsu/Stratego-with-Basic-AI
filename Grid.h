@@ -19,6 +19,16 @@ using namespace std;
 
 class Player;
 
+struct PastMove
+{
+	PastMove();
+	PastMove(int a, int b, int c, int d, Actor * e, Actor * f) { x1 = a; y1 = b; x2 = c; y2 = d; a1 = e; a2 = f; }
+
+	int x1, y1, x2, y2;
+	Actor * a1;
+	Actor * a2;
+};
+
 class Grid : public sf::Drawable
 {
 public:
@@ -43,6 +53,8 @@ public:
 	// 0 otherwise
     // passes in x1 y1 x2 y2
 	int move(int, int, int, int, int);
+
+	void undoMove();
 	
 	// returns true if the move is valid
 	// false otherwise
@@ -97,6 +109,8 @@ private:
 	int off, def;
 
 	int curPlayer;
+
+	vector<PastMove> history;
 
 };
 
