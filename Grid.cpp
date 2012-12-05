@@ -113,6 +113,7 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
 
     if(isValidMove(x1,y1,x2,y2,team))
     {
+	grid[x1][y1]->setMoved(1);
 	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
 
         if(grid[x2][y2]==NULL)
@@ -326,6 +327,7 @@ Actor * Grid::getActor(int x, int y)
 {
 	if (x < 10 && x >= 0 && y < 10 && y >= 0)
 		return grid[x][y];
+
 	else
 		return NULL;
 }
