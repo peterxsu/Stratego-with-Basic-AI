@@ -1,4 +1,5 @@
 #include "Tree2.h"
+#include "Player.h"
 
 #include <cstdlib>
 #include <vector>
@@ -10,11 +11,12 @@ Tree::Tree()
 	state = NULL;
 }
 
-Tree::Tree(Grid * g)
+Tree::Tree(Grid * g, Player * p)
 {
 	// create a copy of the grid to represent the state.
 	// it needs to be a copy because we will be modifying it.
 	state = new Grid(g);
+	player = p;
 }
 
 Tree::~Tree()
@@ -137,5 +139,23 @@ Move * Tree::search(int team, int depth, int & val)
 
 int Tree::eval()
 {
-	return rand();
+	int total = 0;
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			if (state->getActor(x, y))
+			{
+				if (state->getActor(x, y)->getTeam() == player->getTeam())
+				{
+					total -= 11 - state->getActor(x, y)->getType();
+				}
+				else
+				{
+					total += 11 - state->getActor(x, y)->getType();
+				}
+			}
+		}
+	}
+	return total;
 }

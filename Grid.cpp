@@ -113,8 +113,7 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
 
     if(isValidMove(x1,y1,x2,y2,team))
     {
-	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2]);
-	history.push_back(past);
+	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
 
         if(grid[x2][y2]==NULL)
         {
@@ -163,6 +162,10 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
             grid[x1][y1]=NULL;
             return 1;
         }
+
+	past.a3 = grid[x1][y1];
+	past.a4 = grid[x2][y2];
+	history.push_back(past);
 	
     }
     else

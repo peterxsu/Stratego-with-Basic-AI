@@ -3,7 +3,9 @@
 
 #include "Grid.h"
 
-#define SEARCH_DEPTH 4
+#define SEARCH_DEPTH 3
+
+class Player;
 
 struct Move
 {
@@ -18,7 +20,7 @@ class Tree
 public:
 
 	Tree();
-	Tree(Grid *);
+	Tree(Grid *, Player *);
 	~Tree();
 
 	// recursively searches the CURRENT GRID STATE for the move with the max/min value (depending on which team is going)
@@ -30,6 +32,7 @@ private:
 
 	// we only store one state the whole time we're searching. We alter the state as we traverse the tree.
 	Grid * state;
+	Player * player;
 
 };
 

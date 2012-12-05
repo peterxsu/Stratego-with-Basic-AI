@@ -192,8 +192,11 @@ void Game::playGame()
 	if (grid->getOver())
 	{
 		//game is over, do something
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && spaceDown == 0)
+		{
+			spaceDown = 1;
 			state = MENU;
+		}
 	}
 	else
 	{

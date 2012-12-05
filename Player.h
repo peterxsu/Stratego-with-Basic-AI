@@ -29,6 +29,7 @@ public:
 	Actor* choosePiece();
 	void choosePlacement(int &, int &);
 	Actor* findPiece(int);
+
 	int getTeam();
 	int getHuman() { return isHuman; }
 	//loads piece placement from file

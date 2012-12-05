@@ -22,11 +22,13 @@ class Player;
 struct PastMove
 {
 	PastMove();
-	PastMove(int a, int b, int c, int d, Actor * e, Actor * f) { x1 = a; y1 = b; x2 = c; y2 = d; a1 = e; a2 = f; }
+	PastMove(int a, int b, int c, int d, Actor * e, Actor * f, Actor * g, Actor * h) { x1 = a; y1 = b; x2 = c; y2 = d; a1 = e; a2 = f; a3 = g; a4 = h; }
 
 	int x1, y1, x2, y2;
 	Actor * a1;
 	Actor * a2;
+	Actor * a3;
+	Actor * a4;
 };
 
 class Grid : public sf::Drawable

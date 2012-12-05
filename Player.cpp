@@ -61,7 +61,7 @@ void Player::makeMove()
 
 	if (isHuman == 1) return;
 
-	Tree * tree = new Tree(grid);
+	Tree * tree = new Tree(grid, this);
 	int v;
 	Move * m = tree->search(team, 1, v);
 	delete tree;
