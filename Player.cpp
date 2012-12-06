@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Grid.h"
 #include "Actor.h"
+#include "Tree2.h"
 
 using namespace std;
 
@@ -34,6 +35,11 @@ Player::Player(int h, int t, Grid* g)
 		actors[x] = new Actor(0, team);
 	actors[38] = new Actor(10, team);
 	actors[39] = new Actor(11, team);
+
+	if (!isHuman)
+		tree = new Tree(grid, this);
+	else
+		tree = NULL;
 }
 
 Player::~Player()
@@ -41,17 +47,32 @@ Player::~Player()
 	for (int x = 0; x < 40; x++)
 		delete actors[x];
 	delete []actors;
+	if (tree) delete tree;
 }
 
 void Player::makeMove()
 {
-	int x1, x2, y1, y2;
-	choosePieceMove(x1, y1);
-	do
-	{
-		chooseDestination(x2, y2);
-	}while(!grid->isValidMove(x1, y1, x2, y2, team));
+	/*
+	// can't be called for human
+	if (isHuman == 1) return;
+	
+	Tree * tree = new Tree(grid, team);
+	tree->traverseTree();
+
+	
+	int x1, y1, x2, y2;
+	tree->returnMoveMemory(x1, y1, x2, y2);
 	grid->move(x1, y1, x2, y2, team);
+	*/
+
+	if (isHuman == 1) return;
+
+	int v;
+	tree->updateState();
+	Move * m = tree->search(team, 1, v);
+	grid->move(m->x1, m->y1, m->x2, m->y2, team);
+	delete m;
+		
 }
 
 void Player::choosePieceMove(int &x, int &y)
@@ -77,6 +98,7 @@ void Player::chooseDestination(int &x, int &y)
 
 void Player::placePieces()
 {
+	if (isHuman == 1) return;
 	loadPlacement("template1.dat");
 }
 

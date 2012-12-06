@@ -19,6 +19,11 @@ public:
 	int getPlaced() { return isPlaced; }
 	void setPlaced(int p) { isPlaced = p; }
 
+	void setMoved(int m) { moved = m; }
+	int getMoved() { return moved; }
+	void setKnown(int k) { known = k; }
+	int getKnown() { return known; }
+
 private:
 
 	// 1 - 9, 1 is strongest
@@ -26,6 +31,9 @@ private:
 	int type;
 	int team;
 	int isPlaced;
+
+	int moved;
+	int known;
 
 };
 

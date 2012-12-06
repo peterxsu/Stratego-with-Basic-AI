@@ -1,10 +1,17 @@
-#ifndef Heuristic_h
-#define Heuristic_h
+#ifndef TREE_H
+#define TREE_H
+
 #include <iostream>
+#include <cstdlib>
+
 #include "Grid.h"
 #include "Actor.h"
+
 #define MAX_DEPTH 5
 #define MATERIAL_CON 66
+
+using namespace std;
+
 enum Terminal
 {
 	win,loss
@@ -19,21 +26,22 @@ private:
        is.This going to implement a minimax algorithm with alpha-beta pruning(minimize unecessary
         searches).This is going to be implemented via depth-first search(recursive). 
                      */
-	static Grid * state; //The state of the grid
-	static int depth;
+	Grid * state; //The state of the grid
+	int depth;
 	int team;    //the team to move per state.we keep cycling through it
-	int calcEvaluationFunction(int,int,int,int,grid);//We use this to evaluate the state at the maxdepth
-    void updateeval(int); //This is going to update the evaluation function of nodes higher than maxdepth
+	int calcEvaluationFunction(int,int,int,int,Grid *);//We use this to evaluate the state at the maxdepth
+    void updateeval(int *, int *); //This is going to update the evaluatiid *on function of nodes higher than maxdepth
     void moveStore(int x1, int y1, int x2, int y2);//this function stores moves in movelist
+
     int moveList[MAX_DEPTH][4];   //the movelist stores moves for every state we traverse through
     int moveMemory[4];  //This is the memory of the optimal move
     void movecopy(); //movecopy stores the optimal moves from movestore to movememory
     int invokeTeam; //invoke team is the team that called the tree
 
 public:
-	Tree(Grid*, int); //this initialises the tree object
-    int* traverseTree(); //traverse tree returns null for depth of 0 and evaluation pointer for any other depth
-    int* returnMoveMemory();
+	Tree(Grid*, int);
+    int* traverseTree();
+    void returnMoveMemory(int &, int &, int &, int &);
 
 };
 
@@ -58,7 +66,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 				currentActor = state->getActor(x,y);
 				if(currentActor && currentActor->getTeam() == team && currentActor->getType() > 0 && currentActor->getType() < 11) //checking if valid actor and valid type and if it is in the team that has to move
 				{
-					if(grid->isValidMove(x, y, x-1, y, team)) //checking whether moving an actor to the left square is a valid move
+					if(state->isValidMove(x, y, x-1, y, team)) //checking whether moving an actor to the left square is a valid move
 					{
 						moveStore(x, y, x-1, y); //storing in the move store
 						depth++;// increasing depth as we are producing possible nodes for every possible move
@@ -78,7 +86,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 					if(currentActor->getType() == 9) //checking if an actor at a particular spot is a scout
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x-distance, y, team))//Producing all the moves which involve a scout moving left
+						while(state->isValidMove(x, y, x-distance, y, team))
 						{
 							moveStore(x, y, x-distance, y); //storing eveery possible move that lead to children states of moving a scout to the left
 							depth++; //increasing depth as we produce the children states
@@ -97,7 +105,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 							distance++;
 						}
 					}
-					if(grid->isValidMove(x, y, x, y-1, team)) //checking a valid move for moving downwards
+					if(state->isValidMove(x, y, x, y-1, team))
 					{
 						moveStore(x, y, x, y-1);//storing eveery possible move that lead to children states of moving a scout to the left
 						depth++;//increasing depth as we produce the children states
@@ -118,7 +126,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x, y-distance, team))
+						while(state->isValidMove(x, y, x, y-distance, team))
 						{
 							moveStore(x, y, x, y-distance);
 							depth++;
@@ -137,7 +145,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
                             delete temp2;
 						}
 					}
-					if(grid->isValidMove(x, y, x+1, y, team))
+					if(state->isValidMove(x, y, x+1, y, team))
 					{
 						moveStore(x, y, x+1, y);
 						depth++;
@@ -157,7 +165,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x+distance, y, team))
+						while(state->isValidMove(x, y, x+distance, y, team))
 						{
 							moveStore(x, y, x+distance, y);
 							depth++;
@@ -176,7 +184,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 							distance++;
 						}
 					}
-					if(grid->isValidMove(x, y, x, y+1, team))
+					if(state->isValidMove(x, y, x, y+1, team))
 					{
 						moveStore(x, y, x, y+1);
 						depth++;
@@ -196,7 +204,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 					if(currentActor->getType() == 9)
 					{
 						int distance = 2;
-						while(grid->isValidMove(x, y, x, y+distance, team))
+						while(state->isValidMove(x, y, x, y+distance, team))
 						{
 							moveStore(x, y, x, y+distance);
 							depth++;
@@ -220,7 +228,7 @@ int* Tree::traverseTree()          //This is an int*, as I am recursively return
 	}
 	else if(depth==MAX_DEPTH)
 	{
-		evaluation = new int(calcEvaluationFunction());
+		evaluation = new int(calcEvaluationFunction(0, 0, 0, 0, NULL));
 	}
 	if (depth)   //we return evaluation pointers for every depth other than start.for start,we return null
 		return evaluation;
@@ -241,7 +249,7 @@ void Tree::moveStore(int x1, int y1, int x2, int y2) //movestore stores every po
 
 int Tree::calcEvaluationFunction(int xin,int yin,int xfinal,int yfinal,Grid * previous)//calculating the evaluation function
 {
-          
+          return rand();
 }
 
 void Tree::updateeval(int * temp, int * evaluation) //updateeval expects the human to choose the minimum of the evaluation function for all children states and the AI to choose the maximum
@@ -280,9 +288,12 @@ void Tree::movecopy()
     moveMemory[3]=moveList[0][3];
 }
 
-int* Tree::returnMoveMemory() //we return the most optimal move to take
+void Tree::returnMoveMemory(int & x1, int & y1, int & x2, int & y2)
 {
-	return  moveMemory;
+	x1 = moveMemory[0];
+	y1 = moveMemory[1];
+	x2 = moveMemory[2];
+	y2 = moveMemory[3];
 }
 
 //remember
