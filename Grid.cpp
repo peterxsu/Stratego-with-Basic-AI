@@ -8,6 +8,7 @@
 
 #include "Grid.h"
 #include "Player.h"
+#include "Tree2.h"
 
 #include <iostream>
 #include <iomanip>
@@ -112,6 +113,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
 
     if(isValidMove(x1,y1,x2,y2,team))
     {
+	grid[x1][y1]->setMoved(1);
+	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
+
         if(grid[x2][y2]==NULL)
         {
             grid[x2][y2]=grid[x1][y1];
@@ -130,6 +134,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
         {
+		grid[x1][y1]->setKnown(1);
+		grid[x2][y2]->setKnown(1);
+
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
@@ -141,6 +148,8 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
         }
         if(grid[x1][y1]->getType() == grid[x2][y2]->getType())
         {
+		grid[x1][y1]->setKnown(1);
+		grid[x2][y2]->setKnown(1);
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
@@ -152,6 +161,8 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
         }
         else//weaker piece is moving
         {
+		grid[x1][y1]->setKnown(1);
+		grid[x2][y2]->setKnown(1);
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
@@ -159,10 +170,33 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
             grid[x1][y1]=NULL;
             return 1;
         }
+
+	past.a3 = grid[x1][y1];
+	past.a4 = grid[x2][y2];
+	history.push_back(past);
 	
     }
     else
         return 0;
+}
+
+void Grid::undoMove()
+{
+	if (history.size() > 0)
+	{
+		PastMove p = history.back();
+		history.pop_back();
+		if (grid[p.x1][p.y1])
+			grid[p.x1][p.y1]->setPlaced(0);
+		if (grid[p.x2][p.y2])
+			grid[p.x2][p.y2]->setPlaced(0);
+		grid[p.x1][p.y1] = p.a1;
+		grid[p.x2][p.y2] = p.a2;
+		if (grid[p.x1][p.y1])
+			grid[p.x1][p.y1]->setPlaced(1);
+		if (grid[p.x2][p.y2])
+			grid[p.x2][p.y2]->setPlaced(1);
+	}
 }
 
 bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
@@ -300,6 +334,7 @@ Actor * Grid::getActor(int x, int y)
 {
 	if (x < 10 && x >= 0 && y < 10 && y >= 0)
 		return grid[x][y];
+
 	else
 		return NULL;
 }
