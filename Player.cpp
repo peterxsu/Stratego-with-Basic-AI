@@ -35,6 +35,11 @@ Player::Player(int h, int t, Grid* g)
 		actors[x] = new Actor(0, team);
 	actors[38] = new Actor(10, team);
 	actors[39] = new Actor(11, team);
+
+	if (!isHuman)
+		tree = new Tree(grid, this);
+	else
+		tree = NULL;
 }
 
 Player::~Player()
@@ -42,6 +47,7 @@ Player::~Player()
 	for (int x = 0; x < 40; x++)
 		delete actors[x];
 	delete []actors;
+	if (tree) delete tree;
 }
 
 void Player::makeMove()
@@ -61,10 +67,9 @@ void Player::makeMove()
 
 	if (isHuman == 1) return;
 
-	Tree * tree = new Tree(grid, this);
 	int v;
+	tree->updateState();
 	Move * m = tree->search(team, 1, v);
-	delete tree;
 	grid->move(m->x1, m->y1, m->x2, m->y2, team);
 	delete m;
 		

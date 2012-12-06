@@ -134,6 +134,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
         {
+		grid[x1][y1]->setKnown(1);
+		grid[x2][y2]->setKnown(1);
+
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
@@ -145,6 +148,8 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
         }
         if(grid[x1][y1]->getType() == grid[x2][y2]->getType())
         {
+		grid[x1][y1]->setKnown(1);
+		grid[x2][y2]->setKnown(1);
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
@@ -156,6 +161,8 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
         }
         else//weaker piece is moving
         {
+		grid[x1][y1]->setKnown(1);
+		grid[x2][y2]->setKnown(1);
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();

@@ -9,23 +9,28 @@ using namespace std;
 Tree::Tree()
 {
 	state = NULL;
+	grid = NULL;
 }
 
 Tree::Tree(Grid * g, Player * p)
 {
 	// create a copy of the grid to represent the state.
 	// it needs to be a copy because we will be modifying it.
-	state = new Grid(g);
+	grid = g;
 	player = p;
+	state = NULL;
+
+	updateState();
 }
 
 Tree::~Tree()
 {
-	delete state;
+	if (state) delete state;
 }
 
 Move * Tree::search(int team, int depth, int & val)
 {
+
 	// these vectors store all possible moves and their corresponding values
 	vector<int> values;
 	vector<Move*> moves;		
@@ -158,4 +163,10 @@ int Tree::eval()
 		}
 	}
 	return total;
+}
+
+void Tree::updateState()
+{
+	if (state) delete state;
+	state = new Grid(grid);
 }

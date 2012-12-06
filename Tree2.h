@@ -26,10 +26,18 @@ public:
 	// recursively searches the CURRENT GRID STATE for the move with the max/min value (depending on which team is going)
 	Move * search(int team, int depth, int & val);
 
+	//updates the state according the current state of the game grid
+	//we call this before each turn
+	void updateState();
+
 	int eval();
 
 private:
 
+	//we store a pointer to the actual game grid. this grid is DIFFERENT from the one we use for searching.
+	//the one we use for searching is different because it represents the grid as we know it at the time.
+	//whenever the 
+	Grid * grid;
 	// we only store one state the whole time we're searching. We alter the state as we traverse the tree.
 	Grid * state;
 	Player * player;

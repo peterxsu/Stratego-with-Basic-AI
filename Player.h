@@ -14,6 +14,8 @@ struct MoveList
 	MoveList* next;
 };
 
+class Tree;
+
 class Player
 {
 public:
@@ -56,6 +58,10 @@ protected:
 	Grid * grid;
 	Actor ** actors;
 	int isHuman;
+
+	//used for AI
+
+	Tree * tree;
 
 private:
 
