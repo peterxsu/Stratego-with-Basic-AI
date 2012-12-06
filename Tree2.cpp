@@ -2,6 +2,7 @@
 #include "Player.h"
 
 #include <cstdlib>
+#include <iostream>
 #include <vector>
 
 using namespace std;
@@ -99,7 +100,7 @@ Move * Tree::search(int team, int depth, int & val)
 			// check the value of this state as determined by the max/min of the states that can occur after it
 			search(1 - team, depth + 1, v);
 			// if it's the computer we want to maximize value
-			if (team == 0)
+			if (team == player->getTeam())
 			{
 				if (v > bestVal)
 				{
@@ -110,7 +111,7 @@ Move * Tree::search(int team, int depth, int & val)
 			// otherwise minimize it
 			else
 			{
-				if (v < bestVal)
+				if (v < bestVal)x	
 				{
 					bestIndex = i;
 					bestVal = v;
@@ -130,6 +131,8 @@ Move * Tree::search(int team, int depth, int & val)
 		else
 		{
 			for (int i = 0; i < moves.size(); i++) { if (bestIndex != i) delete moves[i]; }
+			cout << moves[bestIndex]->x1 << " " << moves[bestIndex]->y1 << "\n";
+			cout << moves[bestIndex]->x2 << " " << moves[bestIndex]->y2 << "\n";
 			return moves[bestIndex];
 		}
 	}
@@ -153,11 +156,11 @@ int Tree::eval()
 			{
 				if (state->getActor(x, y)->getTeam() == player->getTeam())
 				{
-					total -= 11 - state->getActor(x, y)->getType();
+					total += 11 - state->getActor(x, y)->getType();
 				}
 				else
 				{
-					total += 11 - state->getActor(x, y)->getType();
+					total -= 11 - state->getActor(x, y)->getType();
 				}
 			}
 		}
@@ -165,8 +168,32 @@ int Tree::eval()
 	return total;
 }
 
+// in updateState(), we use the actual game grid and properties specifying information such as which pieces have moved
+// to generate a game state that represents the grid as the AI sees it. That is, if a piece hasn't been identified
+// directly, it's value will be "estimated" by taking the mean of the values of the pieces that it could possibly be.
+
 void Tree::updateState()
 {
 	if (state) delete state;
-	state = new Grid(grid);
+
+	state = new Grid(0);
+
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			if (grid->getActor(x, y))
+			{
+				if (grid->getActor(x, y)->getTeam() == player->getTeam() || grid->getActor(x, y)->getKnown())
+				{
+					state->add(new Actor(grid->getActor(x, y)), x, y);
+				}
+				else
+				{
+					state->add(new Actor(grid->getActor(x, y)->getType(), !player->getTeam()), x, y);
+				}
+			}
+		}
+	}
+
 }

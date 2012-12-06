@@ -19,7 +19,7 @@ using namespace std;
 sf::Texture Grid::actorChars[12];
 sf::Texture Grid::actorTiles[2];
 
-Grid::Grid()
+Grid::Grid(int o)
 {
 	grid = new Actor**[SIZE];
 	for (int i = 0; i < SIZE; i++)
@@ -44,6 +44,7 @@ Grid::Grid()
 	off = 0;
 	def = 0;
 	curPlayer = 0;
+	owned = o;
 }
 
 Grid::Grid(Grid* g)
@@ -67,6 +68,7 @@ Grid::Grid(Grid* g)
 	off = 0;
 	def = 0;
 	curPlayer = 0;
+	owned = 0;
 }
 
 Grid::~Grid()
@@ -76,7 +78,15 @@ Grid::~Grid()
 		for (int j = 0; j < SIZE; j++)
 		{
 			if (j >= 4 && j <= 5 && ((i >= 2 && i <= 3) || (i >= 6 && i <= 7)))
-				if (grid[i][j]) delete grid[i][j];
+				if (grid[i][j]) 
+				{
+					delete grid[i][j];
+					grid[i][j] = NULL;
+				}
+			if (grid[i][j] && owned == 0)
+			{
+				delete grid[i][j];
+			}
 		}
 		delete grid[i];
 	}

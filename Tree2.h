@@ -3,7 +3,7 @@
 
 #include "Grid.h"
 
-#define SEARCH_DEPTH 3
+#define SEARCH_DEPTH 5
 
 class Player;
 

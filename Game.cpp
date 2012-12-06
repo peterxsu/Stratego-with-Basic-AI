@@ -61,7 +61,7 @@ void Game::reset()
 	if (players[0]) delete players[0];
 	if (players[1]) delete players[1];
 
-	grid = new Grid();
+	grid = new Grid(1);
 	switch (playerMode)
 	{
 	case 0:

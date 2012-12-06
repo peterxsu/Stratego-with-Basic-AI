@@ -35,7 +35,7 @@ class Grid : public sf::Drawable
 {
 public:
     
-	Grid();
+	Grid(int);
 	Grid(Grid*);
 	~Grid();
     
@@ -111,6 +111,11 @@ private:
 	int off, def;
 
 	int curPlayer;
+
+	//if owned is set to 1, that means the actors in this grid are owned by player objects,
+	//so the grid does not need to delete them when it's deleted.
+	//otherwise the actors are not owned by any other object, so the grid must take care of them when it's deleted.
+	int owned;
 
 	vector<PastMove> history;
 
