@@ -111,7 +111,7 @@ Move * Tree::search(int team, int depth, int & val)
 			// otherwise minimize it
 			else
 			{
-				if (v < bestVal)x	
+				if (v < bestVal)	
 				{
 					bestIndex = i;
 					bestVal = v;
