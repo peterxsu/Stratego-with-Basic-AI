@@ -71,12 +71,20 @@ void Player::makeMove()
 
 	int v;
 	tree->updateState();
-	Move m;
-	//if (team == 0) 
-	m = tree->search(team, 1, v, -1000000000, 1000000000);
-	//else m = tree->possibleMoves(team);
+	cout << "flag position: " << tree->getFlagX() << " " << tree->getFlagY() << "\n";
+	if (team == 0)
+	{
+		Move m;
+		m = tree->search(team, 1, v, -1000000000, 1000000000);
+		grid->move(m.x1, m.y1, m.x2, m.y2, team);
+	}
+	else 
+	{
+		Move * m = tree->possibleMoves(team);
+		grid->move(m->x1, m->y1, m->x2, m->y2, team);
+	}
 	cout << "\nmove value: " << v << "\n\n";
-	grid->move(m.x1, m.y1, m.x2, m.y2, team);
+	
 	//delete m;
 		
 }

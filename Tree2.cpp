@@ -15,6 +15,9 @@ Tree::Tree()
 {
 	state = NULL;
 	grid = NULL;
+	player = NULL;
+	flagX = 0;
+	flagY = 0;
 }
 
 Tree::Tree(Grid * g, Player * p)
@@ -258,6 +261,8 @@ void Tree::updateState()
 	vector<Actor*> immobile;
 	vector<Actor*> mobile;
 
+	int notMoved = 0;
+
 	for (int x = 0; x < 10; x++)
 	{
 		for (int y = 0; y < 10; y++)
@@ -271,6 +276,7 @@ void Tree::updateState()
 						immobile.push_back(a);
 					else
 						mobile.push_back(a);
+					if (a->getMoved() == 0) notMoved++;
 				}
 			}
 		}
@@ -290,25 +296,24 @@ void Tree::updateState()
 				{
 					if (!grid->getActor(x, y)->getMoved())
 					{
-						if (immobile.size() > 0)
-						{
-							int i = rand() % immobile.size();
-							state->add(new Actor(immobile[i]), x, y);
-							Actor * temp = immobile[i];
-							immobile[i] = immobile[immobile.size() - 1];
-							immobile[immobile.size() - 1] = temp;
-							immobile.pop_back();
-							
-							
-						}
-						else
-						{
-							int i = rand() % mobile.size();
+						int i = rand() % notMoved;
+						notMoved--;
+						if (i >= immobile.size())
+						{	
+							i = rand() % mobile.size();
 							state->add(new Actor(mobile[i]), x, y);
 							Actor * temp = mobile[i];
 							mobile[i] = mobile[mobile.size() - 1];
 							mobile[mobile.size() - 1] = temp;
 							mobile.pop_back();
+						}
+						else
+						{
+							state->add(new Actor(immobile[i]), x, y);
+							Actor * temp = immobile[i];
+							immobile[i] = immobile[immobile.size() - 1];
+							immobile[immobile.size() - 1] = temp;
+							immobile.pop_back();
 						}
 					}
 					else
@@ -320,6 +325,11 @@ void Tree::updateState()
 						mobile[mobile.size() - 1] = temp;
 						mobile.pop_back();
 					}
+				}
+				if (state->getActor(x, y)->getType() == 11 && state->getActor(x, y)->getTeam() == 1 - player->getTeam())
+				{
+					flagX = x;
+	 				flagY = y;
 				}
 			}
 		}

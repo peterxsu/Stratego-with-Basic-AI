@@ -39,6 +39,9 @@ public:
 
 	int eval();
 
+	int getFlagX() { return flagX; }
+	int getFlagY() { return flagY; }
+
 	// ************************************
 
 	Move * possibleMoves(int team);
@@ -55,6 +58,8 @@ private:
 	// we only store one state the whole time we're searching. We alter the state as we traverse the tree.
 	Grid * state;
 	Player * player;
+
+	int flagX, flagY;
 
 };
 
