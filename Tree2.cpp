@@ -230,8 +230,8 @@ int Tree::eval()
 				default:
 					pieceTotal += mult * (20 - ty);
 				}
-				if (player->getTeam() == 1) distTotal += 10 - y;
-				else distTotal += y;
+				if (te == player->getTeam())
+					distTotal += abs(flagX - x) + abs(flagY - y);
 			}
 		}
 	}
