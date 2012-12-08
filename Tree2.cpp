@@ -267,10 +267,10 @@ void Tree::updateState()
 			{
 				if (a->getTeam() == 1 - player->getTeam() && !a->getKnown())
 				{
-					if (a->getMoved())
-						mobile.push_back(a);
-					else
+					if (a->getType() == 0 || a->getType() == 11)
 						immobile.push_back(a);
+					else
+						mobile.push_back(a);
 				}
 			}
 		}
