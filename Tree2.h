@@ -3,7 +3,7 @@
 
 #include "Grid.h"
 
-#define SEARCH_DEPTH 5
+#define SEARCH_DEPTH 4
 
 class Player;
 
@@ -15,6 +15,13 @@ struct Move
 	int x1, y1, x2, y2;
 };
 
+/*
+Move * possibleMoves(int team);
+int evaluation(int x1, int y1, int x2, int y2, int team);
+bool inDanger(int x, int y, int team,int val);
+int threat(int x, int y,int team, int flagplace);
+*/
+
 class Tree
 {
 public:
@@ -24,13 +31,20 @@ public:
 	~Tree();
 
 	// recursively searches the CURRENT GRID STATE for the move with the max/min value (depending on which team is going)
-	Move * search(int team, int depth, int & val);
+	Move search(int team, int depth, int & val, int alpha, int beta);
 
 	//updates the state according the current state of the game grid
 	//we call this before each turn
 	void updateState();
 
 	int eval();
+
+	// ************************************
+
+	Move * possibleMoves(int team);
+	int evaluation(int x1, int y1, int x2, int y2, int team);
+	bool inDanger(int x, int y, int team,int val);
+	int threat(int x, int y,int team, int flagplace);
 
 private:
 
