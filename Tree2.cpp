@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <list>
 #include <cmath>
 
 #define FLAG_VALUE 1000000
@@ -18,8 +19,6 @@ Tree::Tree()
 
 Tree::Tree(Grid * g, Player * p)
 {
-	// create a copy of the grid to represent the state.
-	// it needs to be a copy because we will be modifying it.
 	grid = g;
 	player = p;
 	state = NULL;
@@ -237,14 +236,45 @@ int Tree::eval()
 }
 
 // in updateState(), we use the actual game grid and properties specifying information such as which pieces have moved
-// to generate a game state that represents the grid as the AI sees it. That is, if a piece hasn't been identified
-// directly, it's value will be "estimated" by taking the mean of the values of the pieces that it could possibly be.
+// to generate a game state that represents the grid as the AI sees it.
+
+/*
+
+rules to follow when generating state:
+
+start with list of all actors
+remove actors that are known, add to state
+for all unknown actors that haven't moved, represent them first with bombs and flags
+if those run out, represent them with remaining actors
+
+*/
 
 void Tree::updateState()
 {
 	if (state) delete state;
 
 	state = new Grid(0);
+
+	vector<Actor*> immobile;
+	vector<Actor*> mobile;
+
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			Actor * a = grid->getActor(x, y);
+			if (a)
+			{
+				if (a->getTeam() == 1 - player->getTeam() && !a->getKnown())
+				{
+					if (a->getMoved())
+						mobile.push_back(a);
+					else
+						immobile.push_back(a);
+				}
+			}
+		}
+	}
 
 	for (int x = 0; x < 10; x++)
 	{
@@ -258,8 +288,38 @@ void Tree::updateState()
 				}
 				else
 				{
-					//try to guess what actor it is
-					state->add(new Actor(5, grid->getActor(x, y)->getTeam()), x, y);
+					if (!grid->getActor(x, y)->getMoved())
+					{
+						if (immobile.size() > 0)
+						{
+							int i = rand() % immobile.size();
+							state->add(new Actor(immobile[i]), x, y);
+							Actor * temp = immobile[i];
+							immobile[i] = immobile[immobile.size() - 1];
+							immobile[immobile.size() - 1] = temp;
+							immobile.pop_back();
+							
+							
+						}
+						else
+						{
+							int i = rand() % mobile.size();
+							state->add(new Actor(mobile[i]), x, y);
+							Actor * temp = mobile[i];
+							mobile[i] = mobile[mobile.size() - 1];
+							mobile[mobile.size() - 1] = temp;
+							mobile.pop_back();
+						}
+					}
+					else
+					{
+						int i = rand() % mobile.size();
+						state->add(new Actor(mobile[i]), x, y);
+						Actor * temp = mobile[i];
+						mobile[i] = mobile[mobile.size() - 1];
+						mobile[mobile.size() - 1] = temp;
+						mobile.pop_back();
+					}
 				}
 			}
 		}
