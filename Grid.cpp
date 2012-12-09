@@ -19,7 +19,7 @@ using namespace std;
 sf::Texture Grid::actorChars[12];
 sf::Texture Grid::actorTiles[2];
 
-Grid::Grid()
+Grid::Grid(int o)
 {
 	grid = new Actor**[SIZE];
 	for (int i = 0; i < SIZE; i++)
@@ -44,6 +44,7 @@ Grid::Grid()
 	off = 0;
 	def = 0;
 	curPlayer = 0;
+	owned = o;
 }
 
 Grid::Grid(Grid* g)
@@ -67,6 +68,7 @@ Grid::Grid(Grid* g)
 	off = 0;
 	def = 0;
 	curPlayer = 0;
+	owned = 0;
 }
 
 Grid::~Grid()
@@ -76,7 +78,15 @@ Grid::~Grid()
 		for (int j = 0; j < SIZE; j++)
 		{
 			if (j >= 4 && j <= 5 && ((i >= 2 && i <= 3) || (i >= 6 && i <= 7)))
-				if (grid[i][j]) delete grid[i][j];
+				if (grid[i][j]) 
+				{
+					delete grid[i][j];
+					grid[i][j] = NULL;
+				}
+			if (grid[i][j] && owned == 0)
+			{
+				delete grid[i][j];
+			}
 		}
 		delete grid[i];
 	}
@@ -114,12 +124,18 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
     if(isValidMove(x1,y1,x2,y2,team))
     {
 	grid[x1][y1]->setMoved(1);
+	if (x1 - x2 > 1 || x2 - x1 > 1 || y1 - y2 > 1 || y2 - y1 > 1) grid[x1][y1]->setKnown(1);
 	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
+
 
         if(grid[x2][y2]==NULL)
         {
             grid[x2][y2]=grid[x1][y1];
             grid[x1][y1]=NULL;
+
+		past.a3 = grid[x1][y1];
+		past.a4 = grid[x2][y2];
+		history.push_back(past);
             return 1;
         }
         if(grid[x2][y2]->getType()==11)//checks to see if it is moving into flag. Will need win function later
@@ -130,6 +146,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
 			grid[x2][y2] = grid[x1][y1];
 			grid[x1][y1] = NULL;
 			setPlayer(2);
+		past.a3 = grid[x1][y1];
+		past.a4 = grid[x2][y2];
+		history.push_back(past);
             return 1;
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
@@ -144,6 +163,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
             grid[x2][y2]->setPlaced(0);
             grid[x2][y2]=grid[x1][y1];
             grid[x1][y1]=NULL;
+	past.a3 = grid[x1][y1];
+	past.a4 = grid[x2][y2];
+	history.push_back(past);
             return 1;
         }
         if(grid[x1][y1]->getType() == grid[x2][y2]->getType())
@@ -157,6 +179,9 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
             grid[x2][y2]->setPlaced(0);
             grid[x1][y1]=NULL;
             grid[x2][y2]=NULL;
+	past.a3 = grid[x1][y1];
+	past.a4 = grid[x2][y2];
+	history.push_back(past);
             return 1;
         }
         else//weaker piece is moving
@@ -168,12 +193,11 @@ int Grid::move(int x1, int y1, int x2, int y2, int team)
 			def = grid[x2][y2]->getType();
             grid[x1][y1]->setPlaced(0);
             grid[x1][y1]=NULL;
-            return 1;
-        }
-
 	past.a3 = grid[x1][y1];
 	past.a4 = grid[x2][y2];
 	history.push_back(past);
+            return 1;
+        }
 	
     }
     else

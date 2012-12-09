@@ -61,7 +61,7 @@ void Game::reset()
 	if (players[0]) delete players[0];
 	if (players[1]) delete players[1];
 
-	grid = new Grid();
+	grid = new Grid(1);
 	switch (playerMode)
 	{
 	case 0:
@@ -540,7 +540,9 @@ void Game::switchPlayers()
 	stringstream stream;
 	if (grid->getAttack())
 	{
-		stream << Player::typeToString(grid->getOffense()) << " attacked\n" << Player::typeToString(grid->getDefense()) << "!\n";
+		stream << Player::typeToString(grid->getOffense()) << " (" << grid->getOffense() << 
+			") attacked\n" << Player::typeToString(grid->getDefense()) << " (" << grid->getDefense()
+			<< ")!\n";
 		if (grid->getOffense() < grid->getDefense())
 			stream << Player::typeToString(grid->getOffense()) << " won!\n";
 		else

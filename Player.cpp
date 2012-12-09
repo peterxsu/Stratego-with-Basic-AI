@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <cstdlib>
 
 #include "Player.h"
 #include "Grid.h"
@@ -69,9 +71,21 @@ void Player::makeMove()
 
 	int v;
 	tree->updateState();
-	Move * m = tree->search(team, 1, v);
-	grid->move(m->x1, m->y1, m->x2, m->y2, team);
-	delete m;
+	cout << "flag position: " << tree->getFlagX() << " " << tree->getFlagY() << "\n";
+	if (team == 0)
+	{
+		Move m;
+		m = tree->search(team, 1, v, -1000000000, 1000000000);
+		grid->move(m.x1, m.y1, m.x2, m.y2, team);
+	}
+	else 
+	{
+		Move * m = tree->possibleMoves(team);
+		grid->move(m->x1, m->y1, m->x2, m->y2, team);
+	}
+	cout << "\nmove value: " << v << "\n\n";
+	
+	//delete m;
 		
 }
 
@@ -99,7 +113,9 @@ void Player::chooseDestination(int &x, int &y)
 void Player::placePieces()
 {
 	if (isHuman == 1) return;
-	loadPlacement("template1.dat");
+	stringstream filename;
+	filename << "template" << (rand() % 8 + 1) << ".dat";
+	loadPlacement(filename.str());
 }
 
 Actor* Player::choosePiece()
@@ -419,3 +435,7 @@ void Player::removeAll()
 		}
 	}
 }
+
+// ------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------
+
