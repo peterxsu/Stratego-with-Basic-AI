@@ -222,20 +222,23 @@ int Tree::eval()
 				switch (ty)
 				{
  				case 0:  //bombs
-					pieceTotal += mult * 20;
+					pieceTotal += mult * 100;
 					break;
 				case 11:
 					pieceTotal += mult * FLAG_VALUE;
 					break;
+				case 8:
+					pieceTotal += mult * 50;
+					break;
 				default:
-					pieceTotal += mult * (20 - ty);
+					pieceTotal += mult * (50 - ty);
 				}
 				if (te == player->getTeam())
-					distTotal += abs(fX - x) + abs(fY - y);
+					distTotal += (abs(fX - x) + abs(fY - y));
 			}
 		}
 	}
-	return 10 * pieceTotal + distTotal;
+	return 2 * pieceTotal + distTotal;
 }
 
 // in updateState(), we use the actual game grid and properties specifying information such as which pieces have moved
