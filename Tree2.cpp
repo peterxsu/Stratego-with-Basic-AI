@@ -16,8 +16,8 @@ Tree::Tree()
 	state = NULL;
 	grid = NULL;
 	player = NULL;
-	flagX = 0;
-	flagY = 0;
+	fX = 0;
+	fY = 0;
 }
 
 Tree::Tree(Grid * g, Player * p)
@@ -131,7 +131,7 @@ Move Tree::search(int team, int depth, int & val, int alpha, int beta)
 		{
 			// alter the state by making the move
 			state->move(moves[i].x1, moves[i].y1, moves[i].x2, moves[i].y2, team);
-			int v;
+			int v = 0;
 			// check the value of this state as determined by the max/min of the states that can occur after it
 			search(1 - team, depth + 1, v, alpha, beta);
 			// if it's the computer we want to maximize value
@@ -231,7 +231,7 @@ int Tree::eval()
 					pieceTotal += mult * (20 - ty);
 				}
 				if (te == player->getTeam())
-					distTotal += abs(flagX - x) + abs(flagY - y);
+					distTotal += abs(fX - x) + abs(fY - y);
 			}
 		}
 	}
@@ -328,8 +328,8 @@ void Tree::updateState()
 				}
 				if (state->getActor(x, y)->getType() == 11 && state->getActor(x, y)->getTeam() == 1 - player->getTeam())
 				{
-					flagX = x;
-	 				flagY = y;
+					fX = x;
+	 				fY = y;
 				}
 			}
 		}
@@ -421,7 +421,7 @@ Move * Tree::possibleMoves(int team)
 int Tree::evaluation(int x1, int y1, int x2, int y2, int team)
 {
     //determines where our flag is so that we can account for threat if piece is on our side
-    int ourflagY;
+    int ourflagY=0;
 	for (int i = 0; i < 10; i++)
     {
 		for (int j = 0; j < 10; j++)
@@ -432,8 +432,8 @@ int Tree::evaluation(int x1, int y1, int x2, int y2, int team)
             }
         }
     }
-    int flagX;
-    int flagY;
+    int flagX=0;
+    int flagY=0;
     //search grid for where their flag is
     for (int i = 0; i < 10; i++)
 	{
@@ -451,7 +451,7 @@ int Tree::evaluation(int x1, int y1, int x2, int y2, int team)
     int distToFlag= abs(x1-flagX) + abs(y1-flagY);
     int newdistToFlag = abs(x2-flagX) + abs(y2-flagY);
     //number of their actors remaining to decide how important certain moves are
-    int actorsRemaining;
+    int actorsRemaining = 0;
     for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 10; j++)
@@ -530,7 +530,7 @@ bool Tree::inDanger(int x, int y, int team,int val)
 //checks what pieces the oponent can kill aka what pieces we would be saving by killing them
 int Tree::threat(int x, int y,int team, int flagplace)
 {
-	int val;
+	int val=0;
     //check up down left and right pieces to see what it can kill
     val = state->getActor(x,y)->getType();
     int t =0;
