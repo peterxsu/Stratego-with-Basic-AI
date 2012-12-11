@@ -209,6 +209,7 @@ int Tree::eval()
 {
 	int pieceTotal = 0;
 	int distTotal = 0;
+	int num = 0;
 	for (int x = 0; x < 10; x++)
 	{
 		for (int y = 0; y < 10; y++)
@@ -216,6 +217,7 @@ int Tree::eval()
 			if (state->getActor(x, y))
 			{
 				int ty = state->getActor(x, y)->getType();
+				if (ty == player->getTeam()) num++;
 				int te = state->getActor(x, y)->getTeam();
 				if (te != 1 && te != 0) continue;
 				int mult = (te == player->getTeam()) * 2 - 1;
@@ -234,11 +236,11 @@ int Tree::eval()
 					pieceTotal += mult * (50 - ty);
 				}
 				if (te == player->getTeam())
-					distTotal += (abs(fX - x) + abs(fY - y));
+					distTotal += (20 - abs(fX - x) + abs(fY - y));
 			}
 		}
 	}
-	return 2 * pieceTotal + distTotal;
+	return 5 * pieceTotal + ((double)distTotal / num);
 }
 
 // in updateState(), we use the actual game grid and properties specifying information such as which pieces have moved
@@ -260,7 +262,25 @@ void Tree::updateState()
 	if (state) delete state;
 
 	state = new Grid(0);
-
+	/*
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			Actor * a = grid->getActor(x, y);
+			if (a)
+			{
+				state->add(new Actor(a), x, y);
+				if (a->getType() == 11)
+				{
+					fX = x;
+					fY = y;
+				}
+			}
+		}
+	}
+	*/
+	
 	vector<Actor*> immobile;
 	vector<Actor*> mobile;
 
@@ -337,7 +357,7 @@ void Tree::updateState()
 			}
 		}
 	}
-
+	
 }
 
 // ***********************************************************************************************************************************
@@ -504,7 +524,7 @@ int Tree::evaluation(int x1, int y1, int x2, int y2, int team)
     if(newdistToFlag<distToFlag)
         worth+=1;
     //moving a miner to the flag is better than most other pieces because it can take out bombs
-    if(newdistToFlag<distToFlag && val==8 && actorsRemaining<25)
+    if(newdistToFlag<distToFlag && val==8 && actorsRemaining<35)
         worth+=2;
     //early game scenarios its better to advance good pieces
     if(newdistToFlag<distToFlag && val<=4)

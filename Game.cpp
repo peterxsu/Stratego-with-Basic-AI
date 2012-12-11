@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 using namespace std;
 
 Game::Game()
@@ -109,6 +110,23 @@ bool Game::run()
 				return false;
 			}
 		}
+		if (e.type == sf::Event::KeyPressed)
+		{
+			if (e.key.code == sf::Keyboard::S)
+			{
+				if (state == PLAY)
+				{
+					saveGame("");
+				}
+			}
+			if (e.key.code == sf::Keyboard::L)
+			{
+				if (state == PLAY)
+				{
+					loadGame("");
+				}
+			}
+		}
 		if (e.type == sf::Event::Resized)
 		{
 			float width = win.getSize().x;
@@ -200,8 +218,16 @@ void Game::playGame()
 	}
 	else
 	{
+		if (input->getMouseState(1) == Input::PRESSED)
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+				grid->redoMove();
+			else
+				grid->undoMove();
+		}
 		if (waiting == 1)
 		{
+
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && spaceDown == 0)
 			{
 				spaceDown = 1;
@@ -240,10 +266,6 @@ void Game::playGame()
 					setPlayer(2);
 				}
 				return;
-			}
-			if (input->getMouseState(1) == Input::PRESSED)
-			{
-				grid->undoMove();
 			}
 			sf::Vector2i tpos;
 			tpos.x = getMousePos().x / 60.0f;
@@ -421,7 +443,7 @@ void Game::setupGame()
 	{
 		//players[curPlayer]->autoPlacePieces();
 		players[curPlayer]->removeAll();
-		if (!players[curPlayer]->loadPlacement("template1.dat")) cout << "error\n";
+		players[curPlayer]->placePieces();
 	}
 
 }
@@ -557,7 +579,73 @@ void Game::switchPlayers()
 	grid->setRevealed(0);
 }
 
+void Game::saveGame(string filename)
+{
+	while (grid->history.size() > 0)
+	{
+		grid->undoMove();
+	}
+	
+	fstream out;
+	out.open("template_a.dat", fstream::trunc | fstream::out);
+	for (int x = 9; x >= 0; x--)
+	{
+		for (int y = 3; y >= 0; y--)
+		{
+			out << grid->getActor(x, y)->getType() << '\n';
+		}
+	}
+	out.close();
 
+	out.open("template_b.dat", fstream::trunc | fstream::out);
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 6; y < 10; y++)
+		{
+			out << grid->getActor(x, y)->getType() << '\n';
+		}
+	}
+	out.close();
+
+	out.open("history.dat", fstream::trunc | fstream::out);
+	for (int i = 0; i < grid->future.size(); i++)
+	{
+		out << grid->future[i].x1 << '\n' << grid->future[i].y1 << '\n' << grid->future[i].x2 << '\n' << grid->future[i].y2 << '\n';
+		out << grid->future[i].team << '\n';
+	}
+	out.close();
+	
+	while (grid->future.size() > 0)
+	{
+		grid->redoMove();
+	}
+}
+
+void Game::loadGame(string filename)
+{
+	grid->history.clear();
+	grid->future.clear();
+
+	players[0]->removeAll();
+	players[0]->loadPlacement("template_a.dat");
+	players[1]->removeAll();
+	players[1]->loadPlacement("template_b.dat");
+
+	ifstream in;
+	in.open("history.dat");
+	while (true)
+	{
+		PastMove p;
+		in >> p.x1;
+		if (in.eof()) break;
+		in >> p.y1;
+		in >> p.x2;
+		in >> p.y2;
+		in >> p.team;
+		grid->future.push_back(p);
+	}
+	in.close();
+}
 
 
 
