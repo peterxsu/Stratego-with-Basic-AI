@@ -69,10 +69,10 @@ void Player::makeMove()
 
 	if (isHuman == 1) return;
 
-	int v;
+	int v = 0;
 	tree->updateState();
 	cout << "flag position: " << tree->getFlagX() << " " << tree->getFlagY() << "\n";
-	if (team == 0)
+	if (team == 1)
 	{
 		Move m;
 		m = tree->search(team, 1, v, -1000000000, 1000000000);
@@ -84,9 +84,9 @@ void Player::makeMove()
 		grid->move(m->x1, m->y1, m->x2, m->y2, team);
 	}
 	cout << "\nmove value: " << v << "\n\n";
-	
+
 	//delete m;
-		
+
 }
 
 void Player::choosePieceMove(int &x, int &y)
@@ -112,7 +112,7 @@ void Player::chooseDestination(int &x, int &y)
 
 void Player::placePieces()
 {
-	if (isHuman == 1) return;
+	//if (isHuman == 1) return;
 	stringstream filename;
 	filename << "template" << (rand() % 8 + 1) << ".dat";
 	loadPlacement(filename.str());
@@ -399,9 +399,9 @@ int Player::loadPlacement(string file)
 	in.open(file.c_str());
 	if (!in.is_open()) return 0;
 
-	for (int x = 0; x < 10; x++)
+	for (int y = 0; y < 4; y++)
 	{
-		for (int y = 0; y < 4; y++)
+		for (int x = 0; x < 10; x++)
 		{
 			int a;
 			in >> a;
@@ -438,4 +438,3 @@ void Player::removeAll()
 
 // ------------------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------------------
-
