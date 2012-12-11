@@ -39,8 +39,8 @@ public:
 
 	int eval();
 
-	int getFlagX() { return flagX; }
-	int getFlagY() { return flagY; }
+	int getFlagX() { return fX; }
+	int getFlagY() { return fY; }
 
 	// ************************************
 
@@ -59,7 +59,7 @@ private:
 	Grid * state;
 	Player * player;
 
-	int flagX, flagY;
+	int fX, fY;
 
 };
 
