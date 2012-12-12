@@ -8,6 +8,8 @@
 #include <cmath>
 
 #define FLAG_VALUE 1000000
+#define KNOWN 0
+//0 is unknown 1 is known
 
 using namespace std;
 
@@ -262,24 +264,28 @@ void Tree::updateState()
 	if (state) delete state;
 
 	state = new Grid(0);
-	/*
-	for (int x = 0; x < 10; x++)
-	{
-		for (int y = 0; y < 10; y++)
-		{
-			Actor * a = grid->getActor(x, y);
-			if (a)
-			{
-				state->add(new Actor(a), x, y);
-				if (a->getType() == 11)
-				{
-					fX = x;
-					fY = y;
-				}
-			}
-		}
+	
+    if (KNOWN == 1)
+    {
+        for (int x = 0; x < 10; x++)
+        {
+            for (int y = 0; y < 10; y++)
+            {
+                Actor * a = grid->getActor(x, y);
+                if (a)
+                {
+                    state->add(new Actor(a), x, y);
+                    if (a->getType() == 11)
+                    {
+                        fX = x;
+                        fY = y;
+                    }
+                }
+            }
+        }
 	}
-	*/
+    else
+    {
 	
 	vector<Actor*> immobile;
 	vector<Actor*> mobile;
@@ -357,6 +363,7 @@ void Tree::updateState()
 			}
 		}
 	}
+    }
 	
 }
 
