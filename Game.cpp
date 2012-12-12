@@ -411,12 +411,12 @@ void Game::setupGame()
 		if (tpos.y >= curPlayer * 6 && tpos.y <= curPlayer * 6 + 3)
 		{
 			highlightTile(tpos.x, tpos.y, sf::Color(0, 0, 255, 80));
-			if (input->getMouseState(0) == Input::PRESSED)
+			if (input->getMouseState(0) == Input::PRESSED && !sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
 			{
 				if (players[curPlayer]->getLeft(placePiece))
 					grid->add(players[curPlayer]->getNext(placePiece), tpos.x, tpos.y);
 			}
-			else if (input->getMouseState(1) == Input::PRESSED)
+			else if (input->getMouseState(0) == Input::PRESSED && (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)))
 			{
 				grid->remove(tpos.x, tpos.y);
 			}
@@ -565,7 +565,9 @@ void Game::switchPlayers()
 		stream << Player::typeToString(grid->getOffense()) << " (" << grid->getOffense() << 
 			") attacked\n" << Player::typeToString(grid->getDefense()) << " (" << grid->getDefense()
 			<< ")!\n";
-		if (grid->getOffense() < grid->getDefense())
+        if (grid->getOffense()==8 && grid->getDefense()==0)
+			stream << Player::typeToString(grid->getOffense()) << " won!\n";
+		else if (grid->getOffense() < grid->getDefense())
 			stream << Player::typeToString(grid->getOffense()) << " won!\n";
 		else
 			if (grid->getOffense() == grid->getDefense())
