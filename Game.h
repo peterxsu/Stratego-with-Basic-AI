@@ -42,6 +42,9 @@ public:
 	void drawInfo();
 	void switchPlayers();
 
+	void saveGame(string filename);
+	void loadGame(string filename);
+
 private:
 
 	Grid * grid;
