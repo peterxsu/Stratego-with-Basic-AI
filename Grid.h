@@ -21,7 +21,7 @@ class Player;
 
 struct PastMove
 {
-	PastMove();
+	PastMove() { }
 	PastMove(int a, int b, int c, int d, Actor * e, Actor * f, Actor * g, Actor * h) { x1 = a; y1 = b; x2 = c; y2 = d; a1 = e; a2 = f; a3 = g; a4 = h; }
 
 	int x1, y1, x2, y2;
@@ -29,6 +29,7 @@ struct PastMove
 	Actor * a2;
 	Actor * a3;
 	Actor * a4;
+	int team;
 };
 
 class Grid : public sf::Drawable
@@ -54,9 +55,11 @@ public:
 	// returns 1 if the move was successful
 	// 0 otherwise
     // passes in x1 y1 x2 y2
-	int move(int, int, int, int, int);
+	int move(int, int, int, int, int, int clear = 1);
 
 	void undoMove();
+	void redoMove();
+
 	
 	// returns true if the move is valid
 	// false otherwise
@@ -100,6 +103,9 @@ public:
 	
 	static sf::Texture actorChars[12];
 	static sf::Texture actorTiles[2];
+
+	vector<PastMove> history;
+	vector<PastMove> future;
     
 private:
     
@@ -116,8 +122,7 @@ private:
 	//so the grid does not need to delete them when it's deleted.
 	//otherwise the actors are not owned by any other object, so the grid must take care of them when it's deleted.
 	int owned;
-
-	vector<PastMove> history;
+	
 
 };
 

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -117,15 +118,18 @@ int Grid::remove(int x, int y)
         return 0;
 }
 
-int Grid::move(int x1, int y1, int x2, int y2, int team)
+int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
 {
 	attack = 0;
 
     if(isValidMove(x1,y1,x2,y2,team))
     {
+		if (clear)
+			future.clear();
 	grid[x1][y1]->setMoved(1);
 	if (x1 - x2 > 1 || x2 - x1 > 1 || y1 - y2 > 1 || y2 - y1 > 1) grid[x1][y1]->setKnown(1);
 	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
+	past.team = team;
 
 
         if(grid[x2][y2]==NULL)
@@ -220,7 +224,22 @@ void Grid::undoMove()
 			grid[p.x1][p.y1]->setPlaced(1);
 		if (grid[p.x2][p.y2])
 			grid[p.x2][p.y2]->setPlaced(1);
+		future.push_back(p);
 	}
+}
+
+void Grid::redoMove()
+{
+	if (future.size() > 0)
+	{
+
+		PastMove p = future.back();
+		cout << p.x1 << " " << p.y1 << " " << p.x2 << " " << p.y2 << " " << p.team << '\n';
+		future.pop_back();
+
+		move(p.x1, p.y1, p.x2, p.y2, p.team, 0);
+	}
+
 }
 
 bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
@@ -236,6 +255,9 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
 	{
         	return false;
 	}
+	if (grid[x1][y1]->getType() == 11)
+		return false;
+
     	if(team!=grid[x1][y1]->getTeam())//checks to make sure right team is moving
     	{
         	return false;
@@ -358,7 +380,6 @@ Actor * Grid::getActor(int x, int y)
 {
 	if (x < 10 && x >= 0 && y < 10 && y >= 0)
 		return grid[x][y];
-
 	else
 		return NULL;
 }
