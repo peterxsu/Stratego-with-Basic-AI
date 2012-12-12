@@ -257,6 +257,8 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
 	}
 	if (grid[x1][y1]->getType() == 11)
 		return false;
+    if (grid[x1][y1]->getType() == 0)
+		return false;
 
     	if(team!=grid[x1][y1]->getTeam())//checks to make sure right team is moving
     	{
