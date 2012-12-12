@@ -223,8 +223,8 @@ int Player::getTotalLeft()
 	int n = 0;
 	for (int i = 0; i < 40; i++)
 	{
-			if (!actors[i]->getPlaced())
-				n++;
+		if (!actors[i]->getPlaced())
+			n++;
 	}
 	return n;
 }

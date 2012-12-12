@@ -126,10 +126,11 @@ int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
     {
 		if (clear)
 			future.clear();
-	grid[x1][y1]->setMoved(1);
-	if (x1 - x2 > 1 || x2 - x1 > 1 || y1 - y2 > 1 || y2 - y1 > 1) grid[x1][y1]->setKnown(1);
-	PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
-	past.team = team;
+		grid[x1][y1]->setMoved(1);
+		if (x1 - x2 > 1 || x2 - x1 > 1 || y1 - y2 > 1 || y2 - y1 > 1)
+			grid[x1][y1]->setKnown(1);
+		PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
+		past.team = team;
 
 
         if(grid[x2][y2]==NULL)
@@ -137,12 +138,12 @@ int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
             grid[x2][y2]=grid[x1][y1];
             grid[x1][y1]=NULL;
 
-		past.a3 = grid[x1][y1];
-		past.a4 = grid[x2][y2];
-		history.push_back(past);
+			past.a3 = grid[x1][y1];
+			past.a4 = grid[x2][y2];
+			history.push_back(past);
             return 1;
         }
-        if(grid[x2][y2]->getType()==11)//checks to see if it is moving into flag. Will need win function later
+        if(grid[x2][y2]->getType()==11)//checks to see if it is moving into flag.
         {
 			isOver = 1;
 			winner = team;
@@ -150,15 +151,15 @@ int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
 			grid[x2][y2] = grid[x1][y1];
 			grid[x1][y1] = NULL;
 			setPlayer(2);
-		past.a3 = grid[x1][y1];
-		past.a4 = grid[x2][y2];
-		history.push_back(past);
+			past.a3 = grid[x1][y1];
+			past.a4 = grid[x2][y2];
+			history.push_back(past);
             return 1;
         }
         if((grid[x1][y1]->getType() < grid[x2][y2]->getType()) || (grid[x1][y1]->getType()==8 && grid[x2][y2]->getType()==0) || (grid[x1][y1]->getType()==10 && grid[x2][y2]->getType()==1))//less than is stronger. Stronger piece is moving. Or miner into bomb. Or spy into marshall
         {
-		grid[x1][y1]->setKnown(1);
-		grid[x2][y2]->setKnown(1);
+			grid[x1][y1]->setKnown(1);
+			grid[x2][y2]->setKnown(1);
 
 			attack = 1;
 			off = grid[x1][y1]->getType();
@@ -167,15 +168,15 @@ int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
             grid[x2][y2]->setPlaced(0);
             grid[x2][y2]=grid[x1][y1];
             grid[x1][y1]=NULL;
-	past.a3 = grid[x1][y1];
-	past.a4 = grid[x2][y2];
-	history.push_back(past);
+			past.a3 = grid[x1][y1];
+			past.a4 = grid[x2][y2];
+			history.push_back(past);
             return 1;
         }
         if(grid[x1][y1]->getType() == grid[x2][y2]->getType())
         {
-		grid[x1][y1]->setKnown(1);
-		grid[x2][y2]->setKnown(1);
+			grid[x1][y1]->setKnown(1);
+			grid[x2][y2]->setKnown(1);
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
@@ -183,26 +184,25 @@ int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
             grid[x2][y2]->setPlaced(0);
             grid[x1][y1]=NULL;
             grid[x2][y2]=NULL;
-	past.a3 = grid[x1][y1];
-	past.a4 = grid[x2][y2];
-	history.push_back(past);
+			past.a3 = grid[x1][y1];
+			past.a4 = grid[x2][y2];
+			history.push_back(past);
             return 1;
         }
         else//weaker piece is moving
         {
-		grid[x1][y1]->setKnown(1);
-		grid[x2][y2]->setKnown(1);
+			grid[x1][y1]->setKnown(1);
+			grid[x2][y2]->setKnown(1);
 			attack = 1;
 			off = grid[x1][y1]->getType();
 			def = grid[x2][y2]->getType();
             grid[x1][y1]->setPlaced(0);
             grid[x1][y1]=NULL;
-	past.a3 = grid[x1][y1];
-	past.a4 = grid[x2][y2];
-	history.push_back(past);
+			past.a3 = grid[x1][y1];
+			past.a4 = grid[x2][y2];
+			history.push_back(past);
             return 1;
         }
-	
     }
     else
         return 0;
@@ -249,120 +249,120 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
 
 	if(x2!=x1 && y2!=y1)//checks to see if move is diagonal
 	{
-	        return false;
+		return false;
 	}
 	if(grid[x1][y1]==NULL)//makes sure there is an actor in the spot we are trying to move
 	{
-        	return false;
+		return false;
 	}
 	if (grid[x1][y1]->getType() == 11)
 		return false;
 
-    	if(team!=grid[x1][y1]->getTeam())//checks to make sure right team is moving
-    	{
-        	return false;
-    	}
-    	if(grid[x2][y2])//check for same team
-    	{
-       		if(grid[x1][y1]->getTeam()==grid[x2][y2]->getTeam())//makes sure you aren't moving into same team
-        	{
-            		return false;
-        	}
-        	if(grid[x2][y2]->getType()<0)//makes sure you don't move into lake
-        	{
-            		return false;
-        	}
-    	}
-       	if(x1==x2 && y1==y2)
-       	{
-        	return false;
-       	}
-        //need to check if it's the right team moving
-        if(grid[x1][y1]->getType() >=1 && grid[x1][y1]->getType() <=10)//checks if its a piece that can move (not bomb or lake or flag)
-        {
-            	if(grid[x1][y1]->getType() == 9)
-            	{
-                	if(x1==x2)
-                	{
-                    		int temp = y1;
-                    		if(y2-y1==1 || y2-y1==-1) //returns true if it's moving one before going through the other checks because the other checks would return false because there is something at y2
-                    		{
-                        		return true;
-                    		}
-                    		if(y2>y1)
-                    		{
+	if(team!=grid[x1][y1]->getTeam())//checks to make sure right team is moving
+	{
+		return false;
+	}
+	if(grid[x2][y2])//check for same team
+	{
+		if(grid[x1][y1]->getTeam()==grid[x2][y2]->getTeam())//makes sure you aren't moving into same team
+		{
+			return false;
+		}
+		if(grid[x2][y2]->getType()<0)//makes sure you don't move into lake
+		{
+			return false;
+		}
+	}
+	if(x1==x2 && y1==y2)
+   	{
+		return false;
+	}
+	//need to check if it's the right team moving
+	if(grid[x1][y1]->getType() >=1 && grid[x1][y1]->getType() <=10)//checks if its a piece that can move (not bomb or lake or flag)
+	{
+		if(grid[x1][y1]->getType() == 9)
+		{
+			if(x1==x2)
+			{
+				int temp = y1;
+				if(y2-y1==1 || y2-y1==-1) //returns true if it's moving one before going through the other checks because the other checks would return false because there is something at y2
+				{
+					return true;
+				}
+				if(y2>y1)
+				{
 					//make sure that we don't check the (x1, y1)
 					temp++;
-                        		while(temp<=y2) //checks that everything in between is null
-                        		{
-                            			if(grid[x1][temp])
+					while(temp<=y2) //checks that everything in between is null
+					{
+						if(grid[x1][temp])
 						{
 							if (temp == y2)
 								return true;
 							else
-                                				return false;
+								return false;
 						}
-                            			temp++;
-                        		}
-                        		return true;
-                    		}
-                    		else
-                    		{
+						temp++;
+					}
+					return true;
+				}
+				else
+				{
 					temp--;
-		                	while(temp>=y2) //checks that everything in between is null
-		                	{
-                            			if(grid[x1][temp])
+					while(temp>=y2) //checks that everything in between is null
+					{
+						if(grid[x1][temp])
 						{
 							if (temp == y2)
 								return true;
 							else
-                                				return false;
+								return false;
 						}
-				            	temp--;
-		                	}
-		                	return true;
-                    		}
-                	}
-                	if(y1==y2)
-                	{
-		            	int temp = x1;
-		            	if(x2-x1==1 || x2-x1==-1)//returns true if it's moving one before going through the other checks because the other checks would return false because there is something at y2
-		            	{
-		                	return true;
-		            	}
-		            	if(x2>x1)
-		            	{
+						temp--;
+					}
+					return true;
+				}
+			}
+			if(y1==y2)
+			{
+				int temp = x1;
+				if(x2-x1==1 || x2-x1==-1)//returns true if it's moving one before going through the other checks because the other checks would return false because there is something at y2
+				{
+					return true;
+				}
+				if(x2>x1)
+				{
 					temp++;
-		                	while(temp<=x2)//checks that everything in between is null
-		                	{
-                            			if(grid[temp][y1])
+					while(temp<=x2)//checks that everything in between is null
+					{
+						if(grid[temp][y1])
 						{
 							if (temp == x2)
 								return true;
 							else
-                                				return false;
+								return false;
 						}
-		                   		 temp++;
-		                	}
-		                	return true;
-		            	}
-		            	else
-		            	{
+						temp++;
+					}
+					return true;
+				}
+				else
+				{
 					temp--;
-		                	while(temp>=x2)//checks that everything in between is null
-		                	{
-                            			if(grid[temp][y1])
+					while(temp>=x2)//checks that everything in between is null
+					{
+						if(grid[temp][y1])
 						{
 							if (temp == x2)
 								return true;
 							else
-                                				return false;
+								return false;
 						}
-		                    		temp--;
-		                	}
-		                	return true;
-		            	}
-		        }
+						temp--;
+					}
+					return true;
+				}
+			}
 		}
 		else
 		{
@@ -370,10 +370,10 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
 			{
 				return true;
 			}
-		        else
-		            	return false;
+			else
+				return false;
 		}
-        }
+	}
 }
 
 Actor * Grid::getActor(int x, int y)

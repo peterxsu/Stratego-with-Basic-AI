@@ -26,11 +26,11 @@ public:
 	void makeMove();
 	void placePieces();
 
-	void choosePieceMove(int &, int &);
-	void chooseDestination(int &, int &);
-	Actor* choosePiece();
-	void choosePlacement(int &, int &);
-	Actor* findPiece(int);
+	void choosePieceMove(int &, int &); //unused except for text input
+	void chooseDestination(int &, int &); //unused except for text input
+	Actor* choosePiece(); //unused except for text input
+	void choosePlacement(int &, int &); //unused except for text input
+	Actor* findPiece(int); //unused except for text input
 
 	int getTeam();
 	int getHuman() { return isHuman; }
