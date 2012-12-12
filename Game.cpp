@@ -262,7 +262,7 @@ void Game::playGame()
 					if (grid->getWinner() == 0)
 						setInfo("Player 1, you win!\nPress space to return\nto the main menu.");
 					else
-						setInfo("Player 2, you win!\nPress space to reutnr\nto the main menu.");
+						setInfo("Player 2, you win!\nPress space to return\nto the main menu.");
 					setPlayer(2);
 				}
 				return;
