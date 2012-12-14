@@ -18,6 +18,18 @@ Tree::Tree()
 	player = NULL;
 	fX = 0;
 	fY = 0;
+	/*unknownPieces[0] = 6;
+	unknownPieces[1] = 1;
+	unknownPieces[2] = 1;
+	unknownPieces[3] = 2;
+	unknownPieces[4] = 3;
+	unknownPieces[5] = 4;
+	unknownPieces[6] = 4;
+	unknownPieces[7] = 4;
+	unknownPieces[8] = 5;
+	unknownPieces[9] = 8;
+	unknownPieces[10] = 1;
+	unknownPieces[11] = 1;*/
 }
 
 Tree::Tree(Grid * g, Player * p)
@@ -25,7 +37,18 @@ Tree::Tree(Grid * g, Player * p)
 	grid = g;
 	player = p;
 	state = NULL;
-
+	/*unknownPieces[0] = 6;
+	unknownPieces[1] = 1;
+	unknownPieces[2] = 1;
+	unknownPieces[3] = 2;
+	unknownPieces[4] = 3;
+	unknownPieces[5] = 4;
+	unknownPieces[6] = 4;
+	unknownPieces[7] = 4;
+	unknownPieces[8] = 5;
+	unknownPieces[9] = 8;
+	unknownPieces[10] = 1;
+	unknownPieces[11] = 1;*/
 	updateState();
 }
 
@@ -207,6 +230,7 @@ Move Tree::search(int team, int depth, int & val, int alpha, int beta)
 
 int Tree::eval()
 {
+	//int unknownFactor = 0;
 	int pieceTotal = 0;
 	int distTotal = 0;
 	int num = 0;
@@ -217,8 +241,8 @@ int Tree::eval()
 			if (state->getActor(x, y))
 			{
 				int ty = state->getActor(x, y)->getType();
-				if (ty == player->getTeam()) num++;
 				int te = state->getActor(x, y)->getTeam();
+				if (te == player->getTeam()) num++;
 				if (te != 1 && te != 0) continue;
 				int mult = (te == player->getTeam()) * 2 - 1;
 				switch (ty)
@@ -236,11 +260,14 @@ int Tree::eval()
 					pieceTotal += mult * (50 - ty);
 				}
 				if (te == player->getTeam())
-					distTotal += (20 - abs(fX - x) + abs(fY - y));
+					distTotal += 20 - (abs(fX - x) + abs(fY - y));
+				//if (te != player->getTeam() && !state->getActor(x, y)->getKnown())
+					//unknownFactor -= 43;
 			}
 		}
 	}
-	return 5 * pieceTotal + ((double)distTotal / num);
+	return 5 * pieceTotal + distTotal /*+ unknownFactor*/;
+	
 }
 
 // in updateState(), we use the actual game grid and properties specifying information such as which pieces have moved
@@ -262,7 +289,7 @@ void Tree::updateState()
 	if (state) delete state;
 
 	state = new Grid(0);
-	/*
+	
 	for (int x = 0; x < 10; x++)
 	{
 		for (int y = 0; y < 10; y++)
@@ -279,8 +306,174 @@ void Tree::updateState()
 			}
 		}
 	}
-	*/
 	
+	/*
+	if (!state)
+	{
+		state = new Grid(0);
+
+	}
+	else
+	{
+		//updates the number of pieces that we still don't know
+		if (grid->history.size() > 1 && grid->history[grid->history.size()-2].a2)
+		{
+			unknownPieces[grid->history[grid->history.size()-2].a2->getType()]--;
+		}
+		if (!grid->history.empty() && grid->history[grid->history.size()-1].a2)
+		{
+			unknownPieces[grid->history[grid->history.size()-1].a1->getType()]--;
+		}
+		//calculates the weighted average used for unknown moving pieces
+		int numMoving = 0;
+		int sumMoving = 0;
+		for (int x = 1; x < 11; x++)
+		{
+			numMoving += unknownPieces[x];
+			sumMoving += unknownPieces[x]*x;
+		}
+		int movingValue = sumMoving/numMoving;
+		cout << movingValue << ";";
+		//calculates the weighted average used for unknown still pieces
+		int numStill = 0;
+		int sumStill = 0;
+		for (int x = 0; x < 10; x++)
+			for (int y = 0; y < 10; y++)
+			{
+				Actor* a = grid->getActor(x, y);
+				if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+					numStill++;
+			}
+		int count = unknownPieces[0] + unknownPieces[11];
+		for (int x = 1; x < 11; x++)
+		{
+			sumStill += unknownPieces[x]*x;
+			count += unknownPieces[x];
+			if (count > numStill)
+			{
+				sumStill -= x*(count-numStill);
+				break;
+			}
+		}
+		int stillValue = sumStill/(numStill-1);
+		cout << stillValue << ";";
+		//places the Actors in a new grid
+		int right = 0;
+		int left = 0;
+		for (int x = 0; x < 10; x++)
+			for (int y = 0; y < 10; y++)
+			{
+				Actor* a = grid->getActor(x, y);
+				if (a)
+				{
+					if (a->getTeam() == player->getTeam())
+						state->add(new Actor(a), x, y);
+					else if (a->getKnown())
+						state->add(new Actor(a), x, y);
+					else if (a->getMoved())
+					{
+						state->add(new Actor(movingValue, a->getTeam()), x, y);
+						state->getActor(x, y)->setMoved(1);
+						state->getActor(x, y)->setPlaced(1);
+					}
+					else
+					{
+						state->add(new Actor(stillValue, a->getTeam()), x, y);
+						state->getActor(x, y)->setPlaced(1);
+						if (x < 5)
+							left++;
+						else
+							right++;
+					}
+				}
+			}
+		//decides the "position" of the flag
+		if (left > right)
+		{
+			bool found = false;
+			for (int y = 0; y < 4; y++)
+			{
+				for (int x = 0; x < 5; x++)
+				{
+					Actor* a = grid->getActor(x, y);
+					if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+					{
+						fX = x;
+						fY = y;
+						state->remove(x, y);
+						state->add(new Actor(11, a->getTeam()), x, y);
+						state->getActor(x, y)->setPlaced(1);
+						found = true;
+						break;
+					}
+				}
+				if (found)
+					break;
+			}
+			if (!found)
+			{
+				for (int y = 9; y > 5; y--)
+					for (int x = 0; x < 5; x++)
+					{
+						Actor* a = grid->getActor(x, y);
+						if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+						{
+							fX = x;
+							fY = y;
+							state->remove(x, y);
+							state->add(new Actor(11, a->getTeam()), x, y);
+							state->getActor(x, y)->setPlaced(1);
+							found = true;
+							break;
+						}
+					}
+			}
+		}
+		else
+		{
+			bool found = false;
+			for (int y = 0; y < 4; y++)
+			{
+				for (int x = 9; x > 4; x--)
+				{
+					Actor* a = grid->getActor(x, y);
+					if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+					{
+						fX = x;
+						fY = y;
+						state->remove(x, y);
+						state->add(new Actor(11, a->getTeam()), x, y);
+						state->getActor(x, y)->setPlaced(1);
+						found = true;
+						break;
+					}
+				}
+				if (found)
+					break;
+			}
+			if (!found)
+			{
+				for (int y = 9; y > 5; y--)
+					for (int x = 9; x > 4; x--)
+					{
+						Actor* a = grid->getActor(x, y);
+						if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+						{
+							fX = x;
+							fY = y;
+							state->remove(x, y);
+							state->add(new Actor(11, a->getTeam()), x, y);
+							state->getActor(x, y)->setPlaced(1);
+							found = true;
+							break;
+						}
+					}
+			}
+		}
+		state->print();
+	}
+	*/
+	/* this is the method outlined right before the function
 	vector<Actor*> immobile;
 	vector<Actor*> mobile;
 
@@ -357,7 +550,7 @@ void Tree::updateState()
 			}
 		}
 	}
-	
+	*/
 }
 
 // ***********************************************************************************************************************************
