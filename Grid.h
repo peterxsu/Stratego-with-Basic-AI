@@ -22,11 +22,15 @@ class Player;
 struct PastMove
 {
 	PastMove() { }
-	PastMove(int a, int b, int c, int d, Actor * e, Actor * f, Actor * g, Actor * h) { x1 = a; y1 = b; x2 = c; y2 = d; a1 = e; a2 = f; a3 = g; a4 = h; }
+	PastMove(int a, int b, int c, int d, Actor * e, Actor * f, Actor * g, Actor * h) { x1 = a; y1 = b; x2 = c; y2 = d; a1 = e; a2 = f; a3 = g; a4 = h;}
 
 	int x1, y1, x2, y2;
 	Actor * a1;
+	int pasta1known;
+	int pasta1moved;
 	Actor * a2;
+	int pasta2known;
+	int pasta2moved;
 	Actor * a3;
 	Actor * a4;
 	int team;
@@ -75,6 +79,7 @@ public:
 	void print();
     
 	int getOver() { return isOver; }
+	void setOver(int o) {isOver = o;}
 	int getWinner() { return winner; }
 	void setRevealed(int r) { revealed = r; }
 	int getRevealed() { return revealed; }
