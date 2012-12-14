@@ -3,7 +3,7 @@
 
 #include "Grid.h"
 
-#define SEARCH_DEPTH 4
+#define SEARCH_DEPTH 5
 
 class Player;
 
@@ -41,6 +41,8 @@ public:
 
 	int getFlagX() { return fX; }
 	int getFlagY() { return fY; }
+
+	//int unknownPieces[12];
 
 	// ************************************
 

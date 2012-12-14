@@ -227,7 +227,16 @@ void Game::playGame()
 		}
 		if (waiting == 1)
 		{
-
+			if (!players[curPlayer]->getPossibleMoves())
+			{
+				if (curPlayer == 0)
+					setInfo("Player 2, you win!\nPress space to return\nto the main menu.");
+				else
+					setInfo("Player 1, you win!\nPress space to return\nto the main menu.");
+				setPlayer(2);
+				waiting = 0;
+				grid->setOver(1);
+			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && spaceDown == 0)
 			{
 				spaceDown = 1;

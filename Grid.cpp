@@ -126,12 +126,20 @@ int Grid::move(int x1, int y1, int x2, int y2, int team, int clear)
     {
 		if (clear)
 			future.clear();
+		int olda1known = grid[x1][y1]->getKnown();
+		int olda1moved = grid[x1][y1]->getMoved();
 		grid[x1][y1]->setMoved(1);
 		if (x1 - x2 > 1 || x2 - x1 > 1 || y1 - y2 > 1 || y2 - y1 > 1)
 			grid[x1][y1]->setKnown(1);
 		PastMove past(x1, y1, x2, y2, grid[x1][y1], grid[x2][y2], NULL, NULL);
 		past.team = team;
-
+		past.pasta1known = olda1known;
+		past.pasta1moved = olda1moved;
+		if (grid[x2][y2])
+		{
+			past.pasta2known = grid[x2][y2]->getKnown();
+			past.pasta2moved = grid[x2][y2]->getMoved();
+		}
 
         if(grid[x2][y2]==NULL)
         {
@@ -221,9 +229,17 @@ void Grid::undoMove()
 		grid[p.x1][p.y1] = p.a1;
 		grid[p.x2][p.y2] = p.a2;
 		if (grid[p.x1][p.y1])
+		{
 			grid[p.x1][p.y1]->setPlaced(1);
+			grid[p.x1][p.y1]->setKnown(p.pasta1known);
+			grid[p.x1][p.y1]->setMoved(p.pasta1moved);
+		}
 		if (grid[p.x2][p.y2])
+		{
 			grid[p.x2][p.y2]->setPlaced(1);
+			grid[p.x2][p.y2]->setKnown(p.pasta2known);
+			grid[p.x2][p.y2]->setMoved(p.pasta2moved);
+		}
 		future.push_back(p);
 	}
 }
@@ -376,6 +392,7 @@ bool Grid::isValidMove(int x1, int y1, int x2, int y2, int team)
 				return false;
 		}
 	}
+	return false;
 }
 
 Actor * Grid::getActor(int x, int y)
