@@ -215,6 +215,7 @@ string Player::typeToString(int ty)
 	case 9: return "Scout";
 	case 10: return "Spy";
 	case 11: return "Flag";
+	default: return "";
 	}
 }
 
