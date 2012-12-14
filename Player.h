@@ -10,6 +10,8 @@ using namespace std;
 
 struct MoveList
 {
+	MoveList() { }
+	~MoveList() {delete next;}
 	int x1, y1, x2, y2;
 	MoveList* next;
 };
