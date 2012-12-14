@@ -72,6 +72,7 @@ void Player::makeMove()
 	int v = 0;
 	tree->updateState();
 	cout << "flag position: " << tree->getFlagX() << " " << tree->getFlagY() << "\n";
+    //team == 1 is andrew, peter, and rohits AI team 0 is mine and wills 
 	if (team == 1)
 	{
 		Move m;

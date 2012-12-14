@@ -8,6 +8,8 @@
 #include <cmath>
 
 #define FLAG_VALUE 1000000
+#define KNOWN 0
+//0 is unknown 1 is known
 
 using namespace std;
 
@@ -290,129 +292,113 @@ void Tree::updateState()
 
 	state = new Grid(0);
 	
-	for (int x = 0; x < 10; x++)
-	{
-		for (int y = 0; y < 10; y++)
-		{
-			Actor * a = grid->getActor(x, y);
-			if (a)
-			{
-				state->add(new Actor(a), x, y);
-				if (a->getType() == 11)
-				{
-					fX = x;
-					fY = y;
-				}
-			}
-		}
+    if (KNOWN == 1)
+    {
+        for (int x = 0; x < 10; x++)
+        {
+            for (int y = 0; y < 10; y++)
+            {
+                Actor * a = grid->getActor(x, y);
+                if (a)
+                {
+                    state->add(new Actor(a), x, y);
+                    if (a->getType() == 11)
+                    {
+                        fX = x;
+                        fY = y;
+                    }
+                }
+            }
+        }
 	}
-	
-	/*
-	if (!state)
-	{
-		state = new Grid(0);
+    else
+    {
+		/*// this is my own attempt at an AI method
+		if (!state)
+		{
+			state = new Grid(0);
 
-	}
-	else
-	{
-		//updates the number of pieces that we still don't know
-		if (grid->history.size() > 1 && grid->history[grid->history.size()-2].a2)
-		{
-			unknownPieces[grid->history[grid->history.size()-2].a2->getType()]--;
 		}
-		if (!grid->history.empty() && grid->history[grid->history.size()-1].a2)
+		else
 		{
-			unknownPieces[grid->history[grid->history.size()-1].a1->getType()]--;
-		}
-		//calculates the weighted average used for unknown moving pieces
-		int numMoving = 0;
-		int sumMoving = 0;
-		for (int x = 1; x < 11; x++)
-		{
-			numMoving += unknownPieces[x];
-			sumMoving += unknownPieces[x]*x;
-		}
-		int movingValue = sumMoving/numMoving;
-		cout << movingValue << ";";
-		//calculates the weighted average used for unknown still pieces
-		int numStill = 0;
-		int sumStill = 0;
-		for (int x = 0; x < 10; x++)
-			for (int y = 0; y < 10; y++)
+			//updates the number of pieces that we still don't know
+			if (grid->history.size() > 1 && grid->history[grid->history.size()-2].a2)
 			{
-				Actor* a = grid->getActor(x, y);
-				if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
-					numStill++;
+				unknownPieces[grid->history[grid->history.size()-2].a2->getType()]--;
 			}
-		int count = unknownPieces[0] + unknownPieces[11];
-		for (int x = 1; x < 11; x++)
-		{
-			sumStill += unknownPieces[x]*x;
-			count += unknownPieces[x];
-			if (count > numStill)
+			if (!grid->history.empty() && grid->history[grid->history.size()-1].a2)
 			{
-				sumStill -= x*(count-numStill);
-				break;
+				unknownPieces[grid->history[grid->history.size()-1].a1->getType()]--;
 			}
-		}
-		int stillValue = sumStill/(numStill-1);
-		cout << stillValue << ";";
-		//places the Actors in a new grid
-		int right = 0;
-		int left = 0;
-		for (int x = 0; x < 10; x++)
-			for (int y = 0; y < 10; y++)
+			//calculates the weighted average used for unknown moving pieces
+			int numMoving = 0;
+			int sumMoving = 0;
+			for (int x = 1; x < 11; x++)
 			{
-				Actor* a = grid->getActor(x, y);
-				if (a)
-				{
-					if (a->getTeam() == player->getTeam())
-						state->add(new Actor(a), x, y);
-					else if (a->getKnown())
-						state->add(new Actor(a), x, y);
-					else if (a->getMoved())
-					{
-						state->add(new Actor(movingValue, a->getTeam()), x, y);
-						state->getActor(x, y)->setMoved(1);
-						state->getActor(x, y)->setPlaced(1);
-					}
-					else
-					{
-						state->add(new Actor(stillValue, a->getTeam()), x, y);
-						state->getActor(x, y)->setPlaced(1);
-						if (x < 5)
-							left++;
-						else
-							right++;
-					}
-				}
+				numMoving += unknownPieces[x];
+				sumMoving += unknownPieces[x]*x;
 			}
-		//decides the "position" of the flag
-		if (left > right)
-		{
-			bool found = false;
-			for (int y = 0; y < 4; y++)
-			{
-				for (int x = 0; x < 5; x++)
+			int movingValue = sumMoving/numMoving;
+			cout << movingValue << ";";
+			//calculates the weighted average used for unknown still pieces
+			int numStill = 0;
+			int sumStill = 0;
+			for (int x = 0; x < 10; x++)
+				for (int y = 0; y < 10; y++)
 				{
 					Actor* a = grid->getActor(x, y);
 					if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+						numStill++;
+				}
+			int count = unknownPieces[0] + unknownPieces[11];
+			for (int x = 1; x < 11; x++)
+			{
+				sumStill += unknownPieces[x]*x;
+				count += unknownPieces[x];
+				if (count > numStill)
+				{
+					sumStill -= x*(count-numStill);
+					break;
+				}
+			}
+			int stillValue = sumStill/(numStill-1);
+			cout << stillValue << ";";
+			//places the Actors in a new grid
+			int right = 0;
+			int left = 0;
+			for (int x = 0; x < 10; x++)
+				for (int y = 0; y < 10; y++)
+				{
+					Actor* a = grid->getActor(x, y);
+					if (a)
 					{
-						fX = x;
-						fY = y;
-						state->remove(x, y);
-						state->add(new Actor(11, a->getTeam()), x, y);
-						state->getActor(x, y)->setPlaced(1);
-						found = true;
-						break;
+						if (a->getTeam() == player->getTeam())
+							state->add(new Actor(a), x, y);
+						else if (a->getKnown())
+							state->add(new Actor(a), x, y);
+						else if (a->getMoved())
+						{
+							state->add(new Actor(movingValue, a->getTeam()), x, y);
+							state->getActor(x, y)->setMoved(1);
+							state->getActor(x, y)->setPlaced(1);
+						}
+						else
+						{
+							state->add(new Actor(stillValue, a->getTeam()), x, y);
+							state->getActor(x, y)->setPlaced(1);
+							if (x < 5)
+								left++;
+							else
+								right++;
+						}
 					}
 				}
-				if (found)
-					break;
-			}
-			if (!found)
+			//decides the "position" of the flag
+			if (left > right)
 			{
-				for (int y = 9; y > 5; y--)
+				bool found = false;
+				for (int y = 0; y < 4; y++)
+				{
 					for (int x = 0; x < 5; x++)
 					{
 						Actor* a = grid->getActor(x, y);
@@ -427,33 +413,33 @@ void Tree::updateState()
 							break;
 						}
 					}
-			}
-		}
-		else
-		{
-			bool found = false;
-			for (int y = 0; y < 4; y++)
-			{
-				for (int x = 9; x > 4; x--)
-				{
-					Actor* a = grid->getActor(x, y);
-					if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
-					{
-						fX = x;
-						fY = y;
-						state->remove(x, y);
-						state->add(new Actor(11, a->getTeam()), x, y);
-						state->getActor(x, y)->setPlaced(1);
-						found = true;
+					if (found)
 						break;
-					}
 				}
-				if (found)
-					break;
+				if (!found)
+				{
+					for (int y = 9; y > 5; y--)
+						for (int x = 0; x < 5; x++)
+						{
+							Actor* a = grid->getActor(x, y);
+							if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+							{
+								fX = x;
+								fY = y;
+								state->remove(x, y);
+								state->add(new Actor(11, a->getTeam()), x, y);
+								state->getActor(x, y)->setPlaced(1);
+								found = true;
+								break;
+							}
+						}
+				}
 			}
-			if (!found)
+			else
 			{
-				for (int y = 9; y > 5; y--)
+				bool found = false;
+				for (int y = 0; y < 4; y++)
+				{
 					for (int x = 9; x > 4; x--)
 					{
 						Actor* a = grid->getActor(x, y);
@@ -468,89 +454,109 @@ void Tree::updateState()
 							break;
 						}
 					}
-			}
-		}
-		state->print();
-	}
-	*/
-	/* this is the method outlined right before the function
-	vector<Actor*> immobile;
-	vector<Actor*> mobile;
-
-	int notMoved = 0;
-
-	for (int x = 0; x < 10; x++)
-	{
-		for (int y = 0; y < 10; y++)
-		{
-			Actor * a = grid->getActor(x, y);
-			if (a)
-			{
-				if (a->getTeam() == 1 - player->getTeam() && !a->getKnown())
+					if (found)
+						break;
+				}
+				if (!found)
 				{
-					if (a->getType() == 0 || a->getType() == 11)
-						immobile.push_back(a);
-					else
-						mobile.push_back(a);
-					if (a->getMoved() == 0) notMoved++;
+					for (int y = 9; y > 5; y--)
+						for (int x = 9; x > 4; x--)
+						{
+							Actor* a = grid->getActor(x, y);
+							if (a && a->getTeam() != player->getTeam() && !a->getKnown() && !a->getMoved())
+							{
+								fX = x;
+								fY = y;
+								state->remove(x, y);
+								state->add(new Actor(11, a->getTeam()), x, y);
+								state->getActor(x, y)->setPlaced(1);
+								found = true;
+								break;
+							}
+						}
 				}
 			}
+			state->print();
 		}
-	}
+		*/
+		// this is the method outlined right before the function
+		vector<Actor*> immobile;
+		vector<Actor*> mobile;
 
-	for (int x = 0; x < 10; x++)
-	{
-		for (int y = 0; y < 10; y++)
+		int notMoved = 0;
+
+		for (int x = 0; x < 10; x++)
 		{
-			if (grid->getActor(x, y) && !state->getActor(x, y))
+			for (int y = 0; y < 10; y++)
 			{
-				if (grid->getActor(x, y)->getTeam() == player->getTeam() || grid->getActor(x, y)->getKnown())
+				Actor * a = grid->getActor(x, y);
+				if (a)
 				{
-					state->add(new Actor(grid->getActor(x, y)), x, y);
-				}
-				else
-				{
-					if (!grid->getActor(x, y)->getMoved())
+					if (a->getTeam() == 1 - player->getTeam() && !a->getKnown())
 					{
-						int i = rand() % notMoved;
-						notMoved--;
-						if (i >= immobile.size())
-						{	
-							i = rand() % mobile.size();
+						if (a->getType() == 0 || a->getType() == 11)
+							immobile.push_back(a);
+						else
+							mobile.push_back(a);
+						if (a->getMoved() == 0) notMoved++;
+					}
+				}
+			}
+		}
+
+		for (int x = 0; x < 10; x++)
+		{
+			for (int y = 0; y < 10; y++)
+			{
+				if (grid->getActor(x, y) && !state->getActor(x, y))
+				{
+					if (grid->getActor(x, y)->getTeam() == player->getTeam() || grid->getActor(x, y)->getKnown())
+					{
+						state->add(new Actor(grid->getActor(x, y)), x, y);
+					}
+					else
+					{
+						if (!grid->getActor(x, y)->getMoved())
+						{
+							int i = rand() % notMoved;
+							notMoved--;
+							if (i >= immobile.size())
+							{	
+								i = rand() % mobile.size();
+								state->add(new Actor(mobile[i]), x, y);
+								Actor * temp = mobile[i];
+								mobile[i] = mobile[mobile.size() - 1];
+								mobile[mobile.size() - 1] = temp;
+								mobile.pop_back();
+							}
+							else
+							{
+								state->add(new Actor(immobile[i]), x, y);
+								Actor * temp = immobile[i];
+								immobile[i] = immobile[immobile.size() - 1];
+								immobile[immobile.size() - 1] = temp;
+								immobile.pop_back();
+							}
+						}
+						else
+						{
+							int i = rand() % mobile.size();
 							state->add(new Actor(mobile[i]), x, y);
 							Actor * temp = mobile[i];
 							mobile[i] = mobile[mobile.size() - 1];
 							mobile[mobile.size() - 1] = temp;
 							mobile.pop_back();
 						}
-						else
-						{
-							state->add(new Actor(immobile[i]), x, y);
-							Actor * temp = immobile[i];
-							immobile[i] = immobile[immobile.size() - 1];
-							immobile[immobile.size() - 1] = temp;
-							immobile.pop_back();
-						}
 					}
-					else
+					if (state->getActor(x, y)->getType() == 11 && state->getActor(x, y)->getTeam() == 1 - player->getTeam())
 					{
-						int i = rand() % mobile.size();
-						state->add(new Actor(mobile[i]), x, y);
-						Actor * temp = mobile[i];
-						mobile[i] = mobile[mobile.size() - 1];
-						mobile[mobile.size() - 1] = temp;
-						mobile.pop_back();
+						fX = x;
+	 					fY = y;
 					}
-				}
-				if (state->getActor(x, y)->getType() == 11 && state->getActor(x, y)->getTeam() == 1 - player->getTeam())
-				{
-					fX = x;
-	 				fY = y;
 				}
 			}
 		}
-	}
-	*/
+    }
 }
 
 // ***********************************************************************************************************************************
