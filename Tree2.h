@@ -60,7 +60,7 @@ private:
 	// we only store one state the whole time we're searching. We alter the state as we traverse the tree.
 	Grid * state;
 	Player * player;
-
+	int numEnemyPiecesRemaining;
 	int fX, fY;
 
 };
