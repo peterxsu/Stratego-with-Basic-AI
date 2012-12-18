@@ -8,7 +8,7 @@
 #include <cmath>
 
 #define FLAG_VALUE 1000000
-#define KNOWN 0
+#define KNOWN 1
 //0 is unknown 1 is known
 
 using namespace std;
@@ -20,6 +20,7 @@ Tree::Tree()
 	player = NULL;
 	fX = 0;
 	fY = 0;
+	numEnemyPiecesRemaining = 40;
 	/*unknownPieces[0] = 6;
 	unknownPieces[1] = 1;
 	unknownPieces[2] = 1;
@@ -261,8 +262,10 @@ int Tree::eval()
 				default:
 					pieceTotal += mult * (50 - ty);
 				}
-				if (te == player->getTeam())
+				if (te == player->getTeam() && numEnemyPiecesRemaining > 15)
 					distTotal += 20 - (abs(fX - x) + abs(fY - y));
+				else if (te == player->getTeam() && ty == 8)
+					distTotal += (20 - (abs(fX - x) + abs(fY - y)))*45;
 				//if (te != player->getTeam() && !state->getActor(x, y)->getKnown())
 					//unknownFactor -= 43;
 			}
@@ -294,6 +297,7 @@ void Tree::updateState()
 	
     if (KNOWN == 1)
     {
+		numEnemyPiecesRemaining = 0;
         for (int x = 0; x < 10; x++)
         {
             for (int y = 0; y < 10; y++)
@@ -307,13 +311,15 @@ void Tree::updateState()
                         fX = x;
                         fY = y;
                     }
+					if (a->getTeam() != player->getTeam() && a->getTeam() != 2)
+						numEnemyPiecesRemaining++;
                 }
             }
         }
 	}
     else
     {
-		/*// this is my own attempt at an AI method
+		/*// this is Peter's own attempt at an AI method
 		if (!state)
 		{
 			state = new Grid(0);
@@ -479,11 +485,13 @@ void Tree::updateState()
 			state->print();
 		}
 		*/
+		///*
 		// this is the method outlined right before the function
 		vector<Actor*> immobile;
 		vector<Actor*> mobile;
 
 		int notMoved = 0;
+		numEnemyPiecesRemaining = 0;
 
 		for (int x = 0; x < 10; x++)
 		{
@@ -500,6 +508,8 @@ void Tree::updateState()
 							mobile.push_back(a);
 						if (a->getMoved() == 0) notMoved++;
 					}
+					if (a->getTeam() != player->getTeam())
+						numEnemyPiecesRemaining++;
 				}
 			}
 		}
@@ -556,6 +566,7 @@ void Tree::updateState()
 				}
 			}
 		}
+		//*/
     }
 }
 
